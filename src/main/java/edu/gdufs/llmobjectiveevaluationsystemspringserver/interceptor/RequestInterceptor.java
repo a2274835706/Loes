@@ -28,7 +28,7 @@ public class RequestInterceptor implements HandlerInterceptor {
         try {
             ValueOperations<String, String> ops = stringRedisTemplate.opsForValue();
             if (ops.get(token) == null) {
-                throw new Exception(NormalResult.STATUS_UNAUTHORIZED);
+                throw new Exception(NormalResult.AUTHORIZED_ERROR);
             }
             return true;
         } catch (Exception e) {

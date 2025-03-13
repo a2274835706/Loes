@@ -60,7 +60,7 @@ public class UserController {
             userInfo.setToken(token);
             return NormalResult.success(userInfo);
         }
-        return NormalResult.error(NormalResult.STATUS_IDENTIFICATION_ERROR);
+        return NormalResult.error(NormalResult.IDENTIFICATION_ERROR);
     }
 
     /**
@@ -79,9 +79,9 @@ public class UserController {
                 userService.addUser(dto.getUsername(), dto.getPassword(), dto.getNickname());
                 return NormalResult.success();
             }
-            return NormalResult.error(NormalResult.STATUS_USER_EXIST_ERROR);
+            return NormalResult.error(NormalResult.EXISTENCE_ERROR);
         }
-        return NormalResult.error(NormalResult.STATUS_UNAUTHORIZED);
+        return NormalResult.error(NormalResult.AUTHORIZED_ERROR);
     }
 
     /**
@@ -97,7 +97,7 @@ public class UserController {
             userService.addIdentity(dto.getUserId(), dto.getIdentity());
             return NormalResult.success();
         }
-        return NormalResult.error(NormalResult.STATUS_UNAUTHORIZED);
+        return NormalResult.error(NormalResult.AUTHORIZED_ERROR);
     }
 
     /**
@@ -138,7 +138,7 @@ public class UserController {
             userService.removeUser(userId);
             return NormalResult.success();
         }
-        return NormalResult.error(NormalResult.STATUS_UNAUTHORIZED);
+        return NormalResult.error(NormalResult.AUTHORIZED_ERROR);
     }
 
     /**

@@ -53,7 +53,7 @@ public interface UserMapper {
     @Delete("delete from `user` where `user_id`=#{userId}")
     void removeUser(long userId);
 
-    @Update("update `user` set `nickname`=#{nickname} where `user_id`=#{userId}")
+    @Update("update `user` set `nickname`=#{nickname}, `update_at`=now() where `user_id`=#{userId}")
     void modifyNickName(long userId, String nickname);
 
     @Select("select * from `user` where `nickname` like #{keyword}")

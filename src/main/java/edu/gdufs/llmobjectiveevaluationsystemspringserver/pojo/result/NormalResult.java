@@ -1,8 +1,6 @@
 package edu.gdufs.llmobjectiveevaluationsystemspringserver.pojo.result;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 /**
  * 一般响应结果类
@@ -15,12 +13,12 @@ public class NormalResult<T> {
 
     public static int CODE_ERROR = 0;
     public static int CODE_SUCCESS = 1;
-    public static String STATUS_OK = "OK";
-    public static String STATUS_SYSTEM_ERROR = "SYSTEM_ERROR";
-    public static String STATUS_VALIDATION_ERROR = "VALIDATION_ERROR";
-    public static String STATUS_UNAUTHORIZED = "UNAUTHORIZED";
-    public static String STATUS_IDENTIFICATION_ERROR = "IDENTIFICATION_ERROR";
-    public static String STATUS_USER_EXIST_ERROR = "USER_EXIST_ERROR";
+    public static String OK = "OK";
+    public static String SYSTEM_ERROR = "SYSTEM_ERROR";
+    public static String VALIDATION_ERROR = "VALIDATION_ERROR";
+    public static String AUTHORIZED_ERROR = "UNAUTHORIZED_ERROR";
+    public static String IDENTIFICATION_ERROR = "IDENTIFICATION_ERROR";
+    public static String EXISTENCE_ERROR = "EXISTENCE_ERROR";
 
     private int code;
     private String message;
@@ -35,11 +33,11 @@ public class NormalResult<T> {
     }
 
     static public NormalResult<?> success() {
-        return new NormalResult<>(CODE_SUCCESS, STATUS_OK, null);
+        return new NormalResult<>(CODE_SUCCESS, OK, null);
     }
 
     static public <E> NormalResult<E> success(E data) {
-        return new NormalResult<>(CODE_SUCCESS, STATUS_OK, data);
+        return new NormalResult<>(CODE_SUCCESS, OK, data);
     }
 
     static public NormalResult<?> error(String message) {

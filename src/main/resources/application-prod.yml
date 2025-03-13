@@ -1,6 +1,6 @@
 server:
     port: 8080
-    address: localhost
+    address: 192.168.202.62
 
 #logging:
 #    level.org.springframework.web: debug
