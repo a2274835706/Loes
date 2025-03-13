@@ -15,6 +15,7 @@ public class Class {
     private Long courseId;
     private String className;
     private String state;
-    private LocalDateTime createTime;
-    private LocalDateTime updateTime;
+    private LocalDateTime createAt;
+    private LocalDateTime updateAt;
+    private LocalDateTime fileAt;
 }

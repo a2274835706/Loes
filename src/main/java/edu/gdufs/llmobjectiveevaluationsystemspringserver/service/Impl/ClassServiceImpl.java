@@ -32,8 +32,15 @@ public class ClassServiceImpl implements ClassService {
     }
 
     @Override
-    public Class classInfo(long classId) {
-        return classMapper.classInfo(classId);
+    public List<Class> classInfo(List<Long> classId) {
+        List<Class> classList = new ArrayList<>();
+        for (long id : classId) {
+            Class c = classMapper.classInfo(id);
+            if (c != null) {
+                classList.add(c);
+            }
+        }
+        return classList;
     }
 
 

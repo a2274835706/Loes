@@ -25,7 +25,7 @@ public class ClassController {
      * 添加班级
      * @return {@link NormalResult}
      */
-    @PatchMapping("/add")
+    @PostMapping("/add")
     public NormalResult<?> addClass(@RequestBody ClassInfoDto dto){
         Course course = courseService.courseInfo(dto.getCourseId());
         if (course != null){
@@ -36,12 +36,17 @@ public class ClassController {
     }
 
     /**
-     * 获取班级信息
+     * 获取课程的班级信息
      * @return {@link NormalResult}
      */
     @GetMapping("/list")
-    public NormalResult<?> getClassInfo(@RequestParam("courseId") List<Long> courseId) {
+    public NormalResult<?> classList(@RequestParam("courseId") List<Long> courseId) {
         return NormalResult.success(classService.classList(courseId));
+    }
+
+    @GetMapping("/info")
+    public NormalResult<?> classInfo(@RequestParam("classId") List<Long> classId) {
+        return NormalResult.success(classService.classInfo(classId));
     }
 
     /**
@@ -49,7 +54,7 @@ public class ClassController {
      * @return {@link NormalResult}
      */
     @GetMapping("/students")
-    public NormalResult<?> students(@RequestBody List<Long> classId){
+    public NormalResult<?> students(@RequestParam("classId") List<Long> classId){
         return NormalResult.success(classService.students(classId));
     }
 
@@ -60,8 +65,7 @@ public class ClassController {
     @GetMapping("/join")
     public NormalResult<?> joinClass(@RequestParam("studentId") List<Long> studentId,
                                      @RequestParam("classId") long classId){
-        Class c = classService.classInfo(classId);
-        if (c != null){
+        if (!classService.classInfo(List.of(classId)).isEmpty()) {
             return NormalResult.success(classService.joinClass(studentId, classId));
         }
         return NormalResult.error(NormalResult.EXISTENCE_ERROR);
@@ -73,7 +77,7 @@ public class ClassController {
      */
     @PatchMapping("/modify")
     public NormalResult<?> modifyClass(@RequestBody ClassInfoDto dto) {
-        if(classService.modifyClass(dto.getCourseId(), dto.getClassName())) {
+        if(classService.modifyClass(dto.getClassId(), dto.getClassName())) {
             return NormalResult.success();
         }
         return NormalResult.error(NormalResult.EXISTENCE_ERROR);
@@ -83,7 +87,7 @@ public class ClassController {
      * 删除班级
      * @return {@link NormalResult}
      */
-    @GetMapping("/remove")
+    @DeleteMapping("/remove")
     public NormalResult<?> removeClassByClassId(@RequestParam("classId") long classId){
         if( classService.removeClass(classId)) {
             return NormalResult.success();

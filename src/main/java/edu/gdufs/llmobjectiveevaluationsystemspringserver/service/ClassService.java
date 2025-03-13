@@ -10,7 +10,7 @@ public interface ClassService {
 
     long addClass(long courseId, String className, String state);
 
-    Class classInfo(long classId);
+    List<Class> classInfo(List<Long> classId);
 
     Map<Long, List<Class>> classList(List<Long> courseId);
 

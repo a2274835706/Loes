@@ -129,7 +129,7 @@ public class CourseController {
      * @return {@link NormalResult}
      */
     @GetMapping("/search")
-    public NormalResult<?> search(@RequestParam String keyword) {
+    public NormalResult<?> search(@RequestParam("courseName") String keyword) {
         return NormalResult.success(courseService.searchCourse(keyword));
     }
 
