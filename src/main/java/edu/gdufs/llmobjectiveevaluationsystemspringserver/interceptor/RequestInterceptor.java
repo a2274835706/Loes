@@ -1,6 +1,7 @@
 package edu.gdufs.llmobjectiveevaluationsystemspringserver.interceptor;
 
 import edu.gdufs.llmobjectiveevaluationsystemspringserver.pojo.result.NormalResult;
+import edu.gdufs.llmobjectiveevaluationsystemspringserver.util.IPUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -28,8 +29,10 @@ public class RequestInterceptor implements HandlerInterceptor {
         try {
             ValueOperations<String, String> ops = stringRedisTemplate.opsForValue();
             if (ops.get(token) == null) {
+                log.warn("{} {} from {} unauthorized",request.getMethod(), request.getRequestURI(), IPUtil.getClientIP(request));
                 throw new Exception(NormalResult.AUTHORIZED_ERROR);
             }
+            log.info("{} {} from {} pass",request.getMethod(), request.getRequestURI(), IPUtil.getClientIP(request));
             return true;
         } catch (Exception e) {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED);

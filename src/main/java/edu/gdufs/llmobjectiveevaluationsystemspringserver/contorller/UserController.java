@@ -7,7 +7,9 @@ import edu.gdufs.llmobjectiveevaluationsystemspringserver.pojo.response.UserInfo
 import edu.gdufs.llmobjectiveevaluationsystemspringserver.pojo.result.NormalResult;
 import edu.gdufs.llmobjectiveevaluationsystemspringserver.pojo.sql.User;
 import edu.gdufs.llmobjectiveevaluationsystemspringserver.service.UserService;
+import edu.gdufs.llmobjectiveevaluationsystemspringserver.util.IPUtil;
 import edu.gdufs.llmobjectiveevaluationsystemspringserver.util.JWTUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -47,7 +49,7 @@ public class UserController {
      * @return {@link NormalResult}
      */
     @PostMapping("/login")
-    public NormalResult<?> login(@RequestBody LoginDto dto) {
+    public NormalResult<?> login(@RequestBody LoginDto dto, HttpServletRequest request) {
         User user = userService.getUser(dto.getUsername());
         if (user != null && user.getPassword().equals(dto.getPassword())) {
             UserInfo userInfo = userService.getUserInfo(user.getUserId());
@@ -58,6 +60,7 @@ public class UserController {
             ValueOperations<String, String> ops = stringRedisTemplate.opsForValue();
             ops.set(token, token, durationHours, TimeUnit.HOURS);
             userInfo.setToken(token);
+            log.info("{} {} from {} pass",request.getMethod(), request.getRequestURI(), IPUtil.getClientIP(request));
             return NormalResult.success(userInfo);
         }
         return NormalResult.error(NormalResult.IDENTIFICATION_ERROR);
