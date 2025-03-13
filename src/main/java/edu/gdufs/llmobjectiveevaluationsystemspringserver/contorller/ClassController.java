@@ -2,7 +2,6 @@ package edu.gdufs.llmobjectiveevaluationsystemspringserver.contorller;
 
 import edu.gdufs.llmobjectiveevaluationsystemspringserver.dto.ClassInfoDto;
 import edu.gdufs.llmobjectiveevaluationsystemspringserver.pojo.result.NormalResult;
-import edu.gdufs.llmobjectiveevaluationsystemspringserver.pojo.sql.Class;
 import edu.gdufs.llmobjectiveevaluationsystemspringserver.pojo.sql.Course;
 import edu.gdufs.llmobjectiveevaluationsystemspringserver.service.ClassService;
 import edu.gdufs.llmobjectiveevaluationsystemspringserver.service.CourseService;
