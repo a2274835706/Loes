@@ -113,24 +113,19 @@ create table `question` (
 );
 
 create table `submission` (
-    `submission_id` bigint unsigned not null,
-    `assignment_id` bigint unsigned not null,
+    `question_id` bigint unsigned not null,
     `student_id` bigint unsigned not null,
-    `total_score` int not null default 0,
-    `submit_at` datetime not null,
-    primary key (`submission_id`),
-    foreign key (`assignment_id`) references `assignment`(`assignment_id`) on delete cascade
-);
-
-create table `submission_detail` (
-    `detail_id` bigint unsigned not null,
-    `submission_id` bigint unsigned not null,
     `process` json not null,
     `answer` json not null,
     `score` int not null default 0,
     `feedback` text not null,
-    primary key (`detail_id`),
-    foreign key (`submission_id`) references `submission`(`submission_id`) on delete cascade
+    `submit_at` datetime not null,
+    `update_at` datetime not null,
+    primary key (`question_id`, `student_id`),
+    foreign key (`question_id`) references  `question`(`question_id`) on delete cascade,
+    foreign key (`student_id`) references `student`(`student_id`) on delete cascade
 );
+
+
 
 
