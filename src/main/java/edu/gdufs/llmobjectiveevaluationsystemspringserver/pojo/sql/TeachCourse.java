@@ -7,9 +7,9 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Teach {
+public class TeachCourse {
 
-    private long courseId;
-    private long teacherId;
+    private String courseId;
+    private String teacherId;
 
 }

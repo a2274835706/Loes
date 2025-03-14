@@ -7,11 +7,11 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class SubmissionInfoDto {
+public class AssignmentQuestionInfoDto {
 
-    private long questionId;
-    private long studentId;
-    private String process;
-    private String answer;
+    private String assignmentQuestionId;
+    private String questionId;
+    private int score;
+    private int soreOrder;
 
 }

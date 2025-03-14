@@ -9,11 +9,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class QuestionInfoDto {
 
-    private long questionId;
-    private long assignmentId;
+    private String questionId;
+    private String teacherId;
     private String content;
-    private int score;
-    private int sortOrder;
+    private String answer;
     private String questionType;
 
 }

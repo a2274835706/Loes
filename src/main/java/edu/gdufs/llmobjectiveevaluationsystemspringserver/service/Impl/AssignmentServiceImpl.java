@@ -1,14 +1,16 @@
 package edu.gdufs.llmobjectiveevaluationsystemspringserver.service.Impl;
 
-import cn.hutool.core.lang.Snowflake;
+import edu.gdufs.llmobjectiveevaluationsystemspringserver.dto.AssignmentQuestionInfoDto;
 import edu.gdufs.llmobjectiveevaluationsystemspringserver.mapper.AssignmentMapper;
-import edu.gdufs.llmobjectiveevaluationsystemspringserver.mapper.CourseMapper;
+import edu.gdufs.llmobjectiveevaluationsystemspringserver.mapper.QuestionMapper;
+import edu.gdufs.llmobjectiveevaluationsystemspringserver.mapper.UserMapper;
 import edu.gdufs.llmobjectiveevaluationsystemspringserver.pojo.sql.Assignment;
+import edu.gdufs.llmobjectiveevaluationsystemspringserver.pojo.sql.AssignmentQuestion;
 import edu.gdufs.llmobjectiveevaluationsystemspringserver.service.AssignmentService;
+import edu.gdufs.llmobjectiveevaluationsystemspringserver.util.PrefixSnowflake;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -18,66 +20,109 @@ import java.util.Map;
 public class AssignmentServiceImpl implements AssignmentService {
 
     @Autowired
-    private CourseMapper courseMapper;
-
-    @Autowired
     private AssignmentMapper assignmentMapper;
 
     @Autowired
-    private Snowflake snowflake;
+    private QuestionMapper questionMapper;
+
+    @Autowired
+    private UserMapper userMapper;
+
+    @Autowired
+    private PrefixSnowflake snowflake;
 
     @Override
-    public long addAssignment(long courseId, long teacherId, String title, String description, LocalDateTime deadline) {
-        if (courseMapper.checkTeach(courseId, teacherId) != null) {
-            long assignmentId = snowflake.nextId();
-            assignmentMapper.addAssignment(assignmentId, courseId, teacherId, title, description, deadline);
+    public String addAssignment(String teacherID, String title, String description) {
+        if (userMapper.getTeacherByTeacherId(teacherID) != null) {
+            String assignmentId = snowflake.nextPrefixId(PrefixSnowflake.PREFIX_ASSIGNMENT);
+            assignmentMapper.addAssignment(assignmentId, teacherID, title, description);
             return assignmentId;
         }
-        return -1;
+        return null;
     }
 
     @Override
-    public List<Assignment> assignmentInfo(List<Long> assignmentId) {
-        List<Assignment> assignments = new ArrayList<>();
-        for (long id : assignmentId) {
-            assignments.add(assignmentMapper.assignmentInfo(id));
+    public List<Assignment> assignmentInfo(List<String> assignmentID) {
+        List<Assignment> list = new ArrayList<>();
+        for (String id : assignmentID) {
+            Assignment assignment = assignmentMapper.assignmentInfo(id);
+            if (assignment != null) {
+                list.add(assignment);
+            }
         }
-        return assignments;
+        return list;
     }
 
     @Override
-    public Map<Long, List<Assignment>> assignmentOfCourse(List<Long> courseId) {
-        Map<Long, List<Assignment>> assignments = new HashMap<>();
-        for (long id : courseId) {
-            assignments.put(id, assignmentMapper.assignmentOfCourse(id));
+    public Map<String, List<Assignment>> assignmentList(List<String> teacherId) {
+        Map<String, List<Assignment>> map = new HashMap<>();
+        for (String id : teacherId) {
+            map.put(id, assignmentMapper.assignmentOfTeacher(id));
         }
-        return assignments;
+        return map;
     }
 
     @Override
-    public Map<Long, List<Assignment>> assignmentOfTeacher(List<Long> teacherId) {
-        Map<Long, List<Assignment>> assignments = new HashMap<>();
-        for (long id : teacherId) {
-            assignments.put(id, assignmentMapper.assignmentOfTeacher(id));
-        }
-        return assignments;
-    }
-
-    @Override
-    public boolean deleteAssignment(long assignmentId) {
-        if (assignmentMapper.assignmentInfo(assignmentId) != null) {
-            assignmentMapper.removeAssignment(assignmentId);
+    public boolean deleteAssignment(String assignmentID) {
+        if (assignmentMapper.assignmentInfo(assignmentID) != null) {
+            assignmentMapper.deleteAssignment(assignmentID);
             return true;
         }
         return false;
     }
 
     @Override
-    public boolean updateAssignment(long assignmentId, String title, String description, LocalDateTime deadline) {
-        if (assignmentMapper.assignmentInfo(assignmentId) != null) {
-            assignmentMapper.updateAssignment(assignmentId, title, description, deadline);
+    public boolean updateAssignment(String assignmentID, String title, String description) {
+        if (assignmentMapper.assignmentInfo(assignmentID) != null) {
+            assignmentMapper.updateAssignment(assignmentID, title, description);
             return true;
         }
         return false;
+    }
+
+    @Override
+    public Map<String, String> addAssignmentQuestion(String assignmentID, List<AssignmentQuestionInfoDto> dto) {
+        Map<String, String> map = new HashMap<>();
+        if (questionMapper.questionInfo(assignmentID) != null) {
+            for (AssignmentQuestionInfoDto d : dto) {
+                String assignmentQuestionId = snowflake.nextPrefixId(PrefixSnowflake.PREFIX_ASSIGNMENT_QUESTION);
+                if (questionMapper.questionInfo(assignmentQuestionId) != null) {
+                    assignmentMapper.addAssignmentQuestion(assignmentQuestionId, assignmentID, d.getQuestionId(), d.getScore(), d.getSoreOrder());
+                    map.put(d.getQuestionId(), assignmentQuestionId);
+                }
+            }
+        }
+        return map;
+    }
+
+    @Override
+    public boolean deleteAssignmentQuestion(String assignmentQuestionID) {
+        if (assignmentMapper.assignmentQuestionInfo(assignmentQuestionID) != null) {
+            assignmentMapper.removeAssignmentQuestion(assignmentQuestionID);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public Map<String, List<AssignmentQuestion>> assignmentQuestionList(List<String> assignmentID) {
+        Map<String, List<AssignmentQuestion>> map = new HashMap<>();
+        for (String id : assignmentID) {
+            map.put(id, assignmentMapper.assignmentQuestionList(id));
+        }
+        return map;
+    }
+
+
+    @Override
+    public List<String> updateAssignmentQuestion(List<AssignmentQuestionInfoDto> dto) {
+        List<String> list = new ArrayList<>();
+        for (AssignmentQuestionInfoDto d : dto) {
+            if (assignmentMapper.assignmentQuestionInfo(d.getAssignmentQuestionId()) != null) {
+                assignmentMapper.updateAssignmentQuestion(d.getAssignmentQuestionId(), d.getScore(), d.getSoreOrder());
+                list.add(d.getAssignmentQuestionId());
+            }
+        }
+        return list;
     }
 }

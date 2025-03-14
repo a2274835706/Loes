@@ -11,7 +11,7 @@ import java.util.List;
 @NoArgsConstructor
 public class AddIdentityDto {
 
-    private long userId;
+    private String userId;
     private List<String> identity;
     private String accessToken;
 

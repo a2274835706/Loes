@@ -1,23 +1,30 @@
 package edu.gdufs.llmobjectiveevaluationsystemspringserver.service;
 
+import edu.gdufs.llmobjectiveevaluationsystemspringserver.dto.AssignmentQuestionInfoDto;
 import edu.gdufs.llmobjectiveevaluationsystemspringserver.pojo.sql.Assignment;
+import edu.gdufs.llmobjectiveevaluationsystemspringserver.pojo.sql.AssignmentQuestion;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
 public interface AssignmentService {
 
-    long addAssignment(long courseId, long teacherId, String title, String description, LocalDateTime deadline);
+    String addAssignment(String teacherID, String title, String description);
 
-    List<Assignment> assignmentInfo(List<Long> assignmentId);
+    List<Assignment> assignmentInfo(List<String> assignmentID);
 
-    Map<Long, List<Assignment>> assignmentOfCourse(List<Long> courseId);
+    Map<String, List<Assignment>> assignmentList(List<String> teacherId);
 
-    Map<Long, List<Assignment>> assignmentOfTeacher(List<Long> teacherId);
+    boolean deleteAssignment(String assignmentID);
 
-    boolean deleteAssignment(long assignmentId);
+    boolean updateAssignment(String assignmentID, String title, String description);
 
-    boolean updateAssignment(long assignmentId, String title, String description, LocalDateTime deadline);
+    Map<String, String> addAssignmentQuestion(String assignmentID, List<AssignmentQuestionInfoDto> aqDto);
+
+    boolean deleteAssignmentQuestion(String assignmentQuestionID);
+
+    Map<String, List<AssignmentQuestion>> assignmentQuestionList(List<String> assignmentID);
+
+    List<String> updateAssignmentQuestion(List<AssignmentQuestionInfoDto> dto);
 
 }

@@ -1,6 +1,5 @@
 package edu.gdufs.llmobjectiveevaluationsystemspringserver.dto;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,11 +9,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class AssignmentInfoDto {
 
-    private long assignmentId;
-    private long courseId;
-    private long teacherId;
+    private String assignmentId;
+    private String teacherId;
     private String title;
     private String description;
-    private long deadline;
 
 }

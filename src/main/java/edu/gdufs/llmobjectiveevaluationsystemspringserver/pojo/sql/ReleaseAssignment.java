@@ -9,12 +9,14 @@ import java.time.LocalDateTime;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Class {
+public class ReleaseAssignment {
+
+    private String releaseId;
+    private String assignmentId;
     private String classId;
-    private String courseId;
-    private String className;
-    private String state;
-    private LocalDateTime createAt;
-    private LocalDateTime updateAt;
-    private LocalDateTime fileAt;
+    private String releaseName;
+    private String description;
+    private LocalDateTime deadline;
+    private LocalDateTime releaseAt;
+
 }

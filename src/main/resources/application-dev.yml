@@ -9,7 +9,7 @@ spring:
     application:
         name: loes-dev
     datasource:
-        url: jdbc:mysql://localhost:3306/LOES
+        url: jdbc:mysql://localhost:3306/loes_new
         driver-class-name: com.mysql.cj.jdbc.Driver
         username: root
         password: 123456

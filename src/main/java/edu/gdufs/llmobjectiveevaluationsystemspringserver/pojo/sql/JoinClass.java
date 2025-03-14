@@ -7,9 +7,9 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Student {
+public class JoinClass {
 
-    private String userId;
+    private String classId;
     private String studentId;
 
 }

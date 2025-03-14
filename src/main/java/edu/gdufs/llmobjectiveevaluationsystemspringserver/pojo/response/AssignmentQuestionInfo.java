@@ -1,4 +1,4 @@
-package edu.gdufs.llmobjectiveevaluationsystemspringserver.pojo.sql;
+package edu.gdufs.llmobjectiveevaluationsystemspringserver.pojo.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Question {
+public class AssignmentQuestionInfo {
 
     private String questionId;
     private String teacherId;
@@ -18,5 +18,9 @@ public class Question {
     private String questionType;
     private LocalDateTime createAt;
     private LocalDateTime updateAt;
+    private String teacherName;
+    private int score;
+    private int sortOrder;
+
 
 }

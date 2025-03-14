@@ -7,19 +7,31 @@ import java.util.Map;
 
 public interface CourseService {
 
-    long addCourse(String courseName, String description);
-    boolean updateState(long courseId, String state);
-    boolean addTeach(long courseId, long teacherId);
-    boolean addStudy(long courseId, long studentId);
-    Course courseInfo(long courseId);
-    Map<Long, Course> courseList(List<Long> courseId);
-    Map<Long, List<Long>> studentCourseList(List<Long> studentId);
-    Map<Long, List<Long>> teacherCourseList(List<Long> teacherId);
-    Map<Long, List<Long>> teachers(List<Long> teacherId);
-    boolean teacherFileCourse(long courseId);
-    boolean modifyCourse(long courseId, String courseName, String description);
+    String addCourse(String courseName, String description);
+
+    boolean updateState(String courseId, String state);
+
+    boolean addTeach(String courseId, String teacherId);
+
+    boolean addStudy(String courseId, String studentId);
+
+    Course courseInfo(String courseId);
+
+    Map<String, Course> courseList(List<String> courseId);
+
+    Map<String, List<String>> studentCourseList(List<String> studentId);
+
+    Map<String, List<String>> teacherCourseList(List<String> teacherId);
+
+    Map<String, List<String>> teachers(List<String> teacherId);
+
+    boolean teacherFileCourse(String courseId);
+
+    boolean modifyCourse(String courseId, String courseName, String description);
+
     List<Course> searchCourse(String courseName);
-    boolean removeCourse(long courseId);
+
+    boolean removeCourse(String courseId);
 
 
 }
