@@ -79,8 +79,7 @@ public class UserController {
         if (userService.checkAccessToken(dto.getAccessToken())) {
             User user = userService.getUserByUsername(dto.getUsername());
             if (user == null) {
-                userService.addUser(dto.getUsername(), dto.getPassword(), dto.getNickname());
-                return NormalResult.success();
+                return NormalResult.success(userService.addUser(dto.getUsername(), dto.getPassword(), dto.getNickname()));
             }
             return NormalResult.error(NormalResult.EXISTENCE_ERROR);
         }
@@ -97,8 +96,7 @@ public class UserController {
     @PostMapping("/identity")
     public NormalResult<?> addIdentity(@RequestBody AddIdentityDto dto) {
         if (userService.checkAccessToken(dto.getAccessToken())) {
-            userService.addIdentity(dto.getUserId(), dto.getIdentity());
-            return NormalResult.success();
+            return NormalResult.success(userService.addIdentity(dto.getUserId(), dto.getIdentity()));
         }
         return NormalResult.error(NormalResult.AUTHORIZED_ERROR);
     }

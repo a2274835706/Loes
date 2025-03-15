@@ -64,8 +64,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void addUser(String username, String password, String nickname) {
-        userMapper.addUser(snowflake.nextPrefixId(PrefixSnowflake.PREFIX_USER), username, password, nickname);
+    public String addUser(String username, String password, String nickname) {
+        String userId = snowflake.nextPrefixId(PrefixSnowflake.PREFIX_USER);
+        userMapper.addUser(userId, username, password, nickname);
+        return userId;
     }
 
     @Override
@@ -73,33 +75,37 @@ public class UserServiceImpl implements UserService {
         return userMapper.checkAccessToken(accessToken) != null;
     }
 
-    /**
-     * 为用户添加新身份
-     * @param identity 待添加的新身份
-     */
     @Override
-    public void addIdentity(String userId, List<String> identity) {
+    public List<String> addIdentity(String userId, List<String> identity) {
+        List<String> list = new ArrayList<>();
         for (String i : identity) {
             if (i.equals("student")) {
                 if (userMapper.getStudentByUserId(userId) == null) {
-                    userMapper.addStudent(snowflake.nextPrefixId(PrefixSnowflake.PREFIX_STUDENT), userId);
+                    String id = snowflake.nextPrefixId(PrefixSnowflake.PREFIX_STUDENT);
+                    userMapper.addStudent(id, userId);
+                    list.add(id);
                 }
             }
             if (i.equals("teacher")) {
                 if (userMapper.getTeacherByUserId(userId) == null) {
-                    userMapper.addTeacher(snowflake.nextPrefixId(PrefixSnowflake.PREFIX_TEACHER), userId);
+                    String id = snowflake.nextPrefixId(PrefixSnowflake.PREFIX_TEACHER);
+                    userMapper.addTeacher(id, userId);
+                    list.add(id);
                 }
             }
             if (i.equals("administrator")) {
                 if (userMapper.getAdministratorByUserId(userId) == null) {
-                    userMapper.addAdministrator(snowflake.nextPrefixId(PrefixSnowflake.PREFIX_ADMINISTRATOR), userId, SHA256Util.toSHA256(String.valueOf(snowflake.nextId())));
+                    String id = snowflake.nextPrefixId(PrefixSnowflake.PREFIX_ADMINISTRATOR);
+                    userMapper.addAdministrator(id, userId, SHA256Util.toSHA256(String.valueOf(snowflake.nextId())));
+                    list.add(id);
                 }
             }
         }
+        return list;
     }
 
     @Override
-    public Set<String> getUserSet(List<String> userId, List<String> studentId, List<String> teacherId, List<String> administratorId) {
+    public Set<String> getUserSet(List<String> userId, List<String> teacherId, List<String> studentId, List<String> administratorId) {
         Set<String> set = new HashSet<>();
         if (userId != null && !userId.isEmpty()) {
             set.addAll(userId);
@@ -114,7 +120,9 @@ public class UserServiceImpl implements UserService {
         }
         if (teacherId != null && !teacherId.isEmpty()) {
             for (String id : teacherId) {
+                System.out.println(id);
                 Teacher t = userMapper.getTeacherByTeacherId(id);
+                System.out.println(t);
                 if (t != null) {
                     set.add(t.getUserId());
                 }

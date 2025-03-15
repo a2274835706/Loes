@@ -40,7 +40,9 @@ public class CourseServiceImpl implements CourseService {
         if (state.equals("not-started") || state.equals("active")) {
             if (courseInfo(courseId) != null) {
                 courseMapper.updateState(courseId, state);
-                classMapper.updateStateForCourse(courseId, state);
+                if (!classMapper.classList(courseId).isEmpty()) {
+                    classMapper.updateStateForCourse(courseId, state);
+                }
                 return true;
             }
         }

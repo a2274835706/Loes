@@ -2,10 +2,12 @@ package edu.gdufs.llmobjectiveevaluationsystemspringserver.service.Impl;
 
 import edu.gdufs.llmobjectiveevaluationsystemspringserver.dto.AssignmentQuestionInfoDto;
 import edu.gdufs.llmobjectiveevaluationsystemspringserver.mapper.AssignmentMapper;
+import edu.gdufs.llmobjectiveevaluationsystemspringserver.mapper.ClassMapper;
 import edu.gdufs.llmobjectiveevaluationsystemspringserver.mapper.QuestionMapper;
 import edu.gdufs.llmobjectiveevaluationsystemspringserver.mapper.UserMapper;
 import edu.gdufs.llmobjectiveevaluationsystemspringserver.pojo.sql.Assignment;
 import edu.gdufs.llmobjectiveevaluationsystemspringserver.pojo.sql.AssignmentQuestion;
+import edu.gdufs.llmobjectiveevaluationsystemspringserver.pojo.sql.ReleaseAssignment;
 import edu.gdufs.llmobjectiveevaluationsystemspringserver.service.AssignmentService;
 import edu.gdufs.llmobjectiveevaluationsystemspringserver.util.PrefixSnowflake;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +29,9 @@ public class AssignmentServiceImpl implements AssignmentService {
 
     @Autowired
     private UserMapper userMapper;
+
+    @Autowired
+    private ClassMapper classMapper;
 
     @Autowired
     private PrefixSnowflake snowflake;
@@ -124,5 +129,63 @@ public class AssignmentServiceImpl implements AssignmentService {
             }
         }
         return list;
+    }
+
+    @Override
+    public Map<String, String> addRelease(List<String> classId, String assignmentId, String releaseName, String description, String deadline) {
+        Map<String, String> map = new HashMap<>();
+        for (String id : classId) {
+            if (classMapper.classInfo(id) != null) {
+                String releaseId = snowflake.nextPrefixId(PrefixSnowflake.PREFIX_RELEASE_ASSIGNMENT);
+                assignmentMapper.addRelease(releaseId, id, assignmentId, releaseName, description, deadline);
+                map.put(id, releaseId);
+            }
+        }
+        return map;
+    }
+
+    @Override
+    public boolean deleteRelease(String releaseID) {
+        if (assignmentMapper.releaseInfo(releaseID) != null) {
+            assignmentMapper.deleteRelease(releaseID);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean updateRelease(String releaseID, String releaseName, String description, String deadline) {
+        if (assignmentMapper.releaseInfo(releaseID) != null) {
+            assignmentMapper.updateRelease(releaseID, releaseName, description, deadline);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public List<ReleaseAssignment> releaseAssignmentInfo(List<String> releaseID) {
+        List<ReleaseAssignment> list = new ArrayList<>();
+        for (String id : releaseID) {
+            list.add(assignmentMapper.releaseInfo(id));
+        }
+        return list;
+    }
+
+    @Override
+    public Map<String, List<ReleaseAssignment>> releaseAssignmentOfAssignment(List<String> assignmentID) {
+        Map<String, List<ReleaseAssignment>> map = new HashMap<>();
+        for (String id : assignmentID) {
+            map.put(id, assignmentMapper.releaseListOfAssignment(id));
+        }
+        return map;
+    }
+
+    @Override
+    public Map<String, List<ReleaseAssignment>> releaseAssignmentOfClass(List<String> classId) {
+        Map<String, List<ReleaseAssignment>> map = new HashMap<>();
+        for (String id : classId) {
+            map.put(id, assignmentMapper.releaseListOfClass(id));
+        }
+        return map;
     }
 }

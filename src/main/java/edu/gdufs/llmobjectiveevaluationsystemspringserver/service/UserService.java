@@ -14,11 +14,11 @@ public interface UserService {
 
     UserInfo getUserInfo(String userId);
 
-    void addUser(String username, String password, String nickname);
+    String addUser(String username, String password, String nickname);
 
     boolean checkAccessToken(String accessToken);
 
-    void addIdentity(String userId, List<String> identity);
+    List<String> addIdentity(String userId, List<String> identity);
 
     Set<String> getUserSet(List<String> userId, List<String> studentId, List<String> teacherId, List<String> administratorId);
 
