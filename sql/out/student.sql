@@ -10,6 +10,3 @@ create table student
 
 create index user_id
     on student (user_id);
-
-INSERT INTO loes_new.student (student_id, user_id) VALUES ('stud_1900783440974839808', 'user_1900781940923957248');
-INSERT INTO loes_new.student (student_id, user_id) VALUES ('stud_1900785906713886720', 'user_1900785736966209536');

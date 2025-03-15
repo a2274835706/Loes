@@ -10,6 +10,3 @@ create table teacher
 
 create index user_id
     on teacher (user_id);
-
-INSERT INTO loes_new.teacher (teacher_id, user_id) VALUES ('teac_1900783441050337280', 'user_1900781940923957248');
-INSERT INTO loes_new.teacher (teacher_id, user_id) VALUES ('teac_1900785906671943680', 'user_1900785736966209536');

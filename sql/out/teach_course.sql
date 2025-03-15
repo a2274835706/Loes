@@ -13,9 +13,3 @@ create table teach_course
 
 create index teacher_id
     on teach_course (teacher_id);
-
-INSERT INTO loes_new.teach_course (course_id, teacher_id) VALUES ('cour_1900784076667748352', 'teac_1900783441050337280');
-INSERT INTO loes_new.teach_course (course_id, teacher_id) VALUES ('cour_1900785353988505600', 'teac_1900783441050337280');
-INSERT INTO loes_new.teach_course (course_id, teacher_id) VALUES ('cour_1900810355127353344', 'teac_1900783441050337280');
-INSERT INTO loes_new.teach_course (course_id, teacher_id) VALUES ('cour_1900810872981291008', 'teac_1900783441050337280');
-INSERT INTO loes_new.teach_course (course_id, teacher_id) VALUES ('cour_1900812073240100864', 'teac_1900783441050337280');

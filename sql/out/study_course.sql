@@ -13,6 +13,3 @@ create table study_course
 
 create index student_id
     on study_course (student_id);
-
-INSERT INTO loes_new.study_course (course_id, student_id) VALUES ('cour_1900784076667748352', 'stud_1900783440974839808');
-INSERT INTO loes_new.study_course (course_id, student_id) VALUES ('cour_1900785353988505600', 'stud_1900783440974839808');
