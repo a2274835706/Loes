@@ -120,9 +120,7 @@ public class UserServiceImpl implements UserService {
         }
         if (teacherId != null && !teacherId.isEmpty()) {
             for (String id : teacherId) {
-                System.out.println(id);
                 Teacher t = userMapper.getTeacherByTeacherId(id);
-                System.out.println(t);
                 if (t != null) {
                     set.add(t.getUserId());
                 }
