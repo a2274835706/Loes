@@ -41,7 +41,7 @@ public class QuestionController {
 
     @PatchMapping("/modify")
     public NormalResult<?> updateQuestion(@RequestBody QuestionInfoDto dto) {
-        if (questionService.updateQuestion(dto.getTeacherId(), dto.getContent(), dto.getAnswer(), dto.getQuestionType())) {
+        if (questionService.updateQuestion(dto.getQuestionId(), dto.getContent(), dto.getAnswer(), dto.getQuestionType())) {
             return NormalResult.success();
         }
         return NormalResult.error(NormalResult.EXISTENCE_ERROR);
