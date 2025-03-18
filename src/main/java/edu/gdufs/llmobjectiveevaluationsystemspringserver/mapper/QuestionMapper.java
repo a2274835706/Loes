@@ -14,7 +14,7 @@ public interface QuestionMapper {
     @Select("select * from question where question_id=#{questionId}")
     Question questionInfo(String questionId);
 
-    @Select("select * from question where question_id=#{teacherId}")
+    @Select("select * from question where teacher_id=#{teacherId}")
     List<Question> questionOfTeacher(String teacherId);
 
     @Update("update question set content=#{content}, answer=#{answer}, question_type=#{questionType}, update_at=now() where question_id=#{questionId}")
