@@ -50,11 +50,11 @@ public class UserController {
      */
     @PostMapping("/login")
     public NormalResult<?> login(@RequestBody LoginDto dto, HttpServletRequest request) {
-        User user = userService.getUser(dto.getUsername());
+        User user = userService.getUserByUsername(dto.getUsername());
         if (user != null && user.getPassword().equals(dto.getPassword())) {
             UserInfo userInfo = userService.getUserInfo(user.getUserId());
             userInfo.setUserid(user.getUserId());
-            userInfo.setUsername(user.getUserName());
+            userInfo.setUsername(user.getUsername());
             userInfo.setNickname(user.getNickname());
             String token = jwtUtil.generateToken(user.getUserId(), user.getNickname(), userInfo.getIdentity());
             ValueOperations<String, String> ops = stringRedisTemplate.opsForValue();
@@ -77,10 +77,9 @@ public class UserController {
     @PostMapping("/add")
     public NormalResult<?> addUser(@RequestBody AddUserDto dto) {
         if (userService.checkAccessToken(dto.getAccessToken())) {
-            User user = userService.getUser(dto.getUsername());
+            User user = userService.getUserByUsername(dto.getUsername());
             if (user == null) {
-                userService.addUser(dto.getUsername(), dto.getPassword(), dto.getNickname());
-                return NormalResult.success();
+                return NormalResult.success(userService.addUser(dto.getUsername(), dto.getPassword(), dto.getNickname()));
             }
             return NormalResult.error(NormalResult.EXISTENCE_ERROR);
         }
@@ -97,8 +96,7 @@ public class UserController {
     @PostMapping("/identity")
     public NormalResult<?> addIdentity(@RequestBody AddIdentityDto dto) {
         if (userService.checkAccessToken(dto.getAccessToken())) {
-            userService.addIdentity(dto.getUserId(), dto.getIdentity());
-            return NormalResult.success();
+            return NormalResult.success(userService.addIdentity(dto.getUserId(), dto.getIdentity()));
         }
         return NormalResult.error(NormalResult.AUTHORIZED_ERROR);
     }
@@ -111,18 +109,18 @@ public class UserController {
      * @return {@link NormalResult}
      */
     @GetMapping("/info")
-    public NormalResult<?> listUsers(@RequestParam("userId") List<Long> userId,
-                                     @RequestParam("teacherId") List<Long> teacherId,
-                                     @RequestParam("studentId") List<Long> studentId,
-                                     @RequestParam("administratorId") List<Long> administratorId) {
-        Set<Long> set = userService.getUserSet(userId, teacherId, studentId, administratorId);
+    public NormalResult<?> listUsers(@RequestParam("userId") List<String> userId,
+                                     @RequestParam("teacherId") List<String> teacherId,
+                                     @RequestParam("studentId") List<String> studentId,
+                                     @RequestParam("administratorId") List<String> administratorId) {
+        Set<String> set = userService.getUserSet(userId, teacherId, studentId, administratorId);
         List<UserInfo> userList = new ArrayList<>();
-        for (Long id : set) {
+        for (String id : set) {
             User user = userService.getUser(id);
             UserInfo userInfo = userService.getUserInfo(user.getUserId());
             userInfo.setUserid(user.getUserId());
             userInfo.setNickname(user.getNickname());
-            userInfo.setUsername(user.getUserName());
+            userInfo.setUsername(user.getUsername());
             userList.add(userInfo);
         }
         return NormalResult.success(userList);
@@ -136,7 +134,7 @@ public class UserController {
      * @return {@link NormalResult}
      */
     @DeleteMapping("/remove")
-    public NormalResult<?> removeUser(@RequestParam("userId") long userId, @RequestParam("accessToken") String accessToken) {
+    public NormalResult<?> removeUser(@RequestParam("userId") String userId, @RequestParam("accessToken") String accessToken) {
         if (userService.checkAccessToken(accessToken)) {
             userService.removeUser(userId);
             return NormalResult.success();
@@ -149,7 +147,7 @@ public class UserController {
      * @return {@link NormalResult}
      */
     @PatchMapping("/modify")
-    public NormalResult<?> modifyNickname(@RequestParam("userId") long userId, @RequestParam("nickname") String nickname) {
+    public NormalResult<?> modifyNickname(@RequestParam("userId") String userId, @RequestParam("nickname") String nickname) {
         userService.modifyNickname(userId, nickname);
         return NormalResult.success();
     }

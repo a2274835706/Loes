@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Student {
 
-    private long userId;
-    private long studentId;
+    private String userId;
+    private String studentId;
 
 }

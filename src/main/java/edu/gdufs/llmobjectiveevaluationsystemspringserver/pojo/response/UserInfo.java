@@ -11,10 +11,10 @@ import java.util.List;
 @NoArgsConstructor
 public class UserInfo {
 
-    private long userid;
-    private long studentId;
-    private long teacherId;
-    private long administratorId;
+    private String userid;
+    private String studentId;
+    private String teacherId;
+    private String administratorId;
     private String username;
     private String nickname;
     private List<String> identity;

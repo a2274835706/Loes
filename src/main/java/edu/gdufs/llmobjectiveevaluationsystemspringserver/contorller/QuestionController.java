@@ -17,25 +17,22 @@ public class QuestionController {
 
     @PostMapping("/add")
     public NormalResult<?> addQuestion(@RequestBody QuestionInfoDto dto) {
-        long questionId = questionService.addQuestion(dto.getAssignmentId(), dto.getContent(), dto.getScore(), dto.getSortOrder(), dto.getQuestionType());
-        if (questionId != -1) {
-            return NormalResult.success(questionId);
-        }
-        return NormalResult.error(NormalResult.EXISTENCE_ERROR);
+        String questionId = questionService.addQuestion(dto.getTeacherId(), dto.getContent(), dto.getAnswer(), dto.getQuestionType());
+        return NormalResult.success(questionId);
     }
 
     @GetMapping("/info")
-    public NormalResult<?> questionInfo(@RequestParam("questionId") List<Long> questionId) {
+    public NormalResult<?> questionInfo(@RequestParam("questionId") List<String> questionId) {
         return NormalResult.success(questionService.questionInfo(questionId));
     }
 
     @GetMapping("/list")
-    public NormalResult<?> questionList(@RequestParam("assignmentId") List<Long> assignmentId) {
-        return NormalResult.success(questionService.questionList(assignmentId));
+    public NormalResult<?> questionList(@RequestParam("teacherId") List<String> teacherId) {
+        return NormalResult.success(questionService.questionList(teacherId));
     }
 
-    @DeleteMapping("/remove")
-    public NormalResult<?> removeQuestion(@RequestParam("questionId") long questionId) {
+    @DeleteMapping("/delete")
+    public NormalResult<?> deleteQuestion(@RequestParam("questionId") String questionId) {
         if (questionService.deleteQuestion(questionId)) {
             return NormalResult.success();
         }
@@ -43,11 +40,13 @@ public class QuestionController {
     }
 
     @PatchMapping("/modify")
-    public NormalResult<?> modifyQuestion(@RequestBody QuestionInfoDto dto) {
-        if (questionService.updateQuestion(dto.getQuestionId(), dto.getContent(), dto.getScore(), dto.getSortOrder(), dto.getQuestionType())) {
+    public NormalResult<?> updateQuestion(@RequestBody QuestionInfoDto dto) {
+        if (questionService.updateQuestion(dto.getQuestionId(), dto.getContent(), dto.getAnswer(), dto.getQuestionType())) {
             return NormalResult.success();
         }
         return NormalResult.error(NormalResult.EXISTENCE_ERROR);
     }
+
+
 
 }

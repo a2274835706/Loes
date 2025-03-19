@@ -9,9 +9,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class SubmissionInfoDto {
 
-    private long questionId;
-    private long studentId;
+    private String submissionId;
+    private String releaseId;
+    private String studentId;
+    private String questionId;
     private String process;
     private String answer;
+    private int score;
+    private String feedback;
 
 }

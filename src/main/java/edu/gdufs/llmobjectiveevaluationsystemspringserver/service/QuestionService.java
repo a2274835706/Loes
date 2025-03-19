@@ -7,14 +7,14 @@ import java.util.Map;
 
 public interface QuestionService {
 
-    long addQuestion(long assignmentId, String content, int score, int sortOrder, String questionType);
+    String addQuestion(String teacherId, String content, String answer, String questionType);
 
-    List<Question> questionInfo(List<Long> questionId);
+    List<Question> questionInfo(List<String> questionId);
 
-    Map<Long, List<Question>> questionList(List<Long> assignmentId);
+    Map<String, List<Question>> questionList(List<String> teacherId);
 
-    boolean deleteQuestion(long questionId);
+    boolean deleteQuestion(String questionId);
 
-    boolean updateQuestion(long questionId, String content, int score, int sortOrder, String questionType);
+    boolean updateQuestion(String questionId, String content, String answer, String questionType);
 
 }

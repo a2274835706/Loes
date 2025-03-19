@@ -8,15 +8,24 @@ import java.util.Set;
 
 public interface UserService {
 
-    User getUser(long userId);
-    User getUser(String username);
-    UserInfo getUserInfo(long userId);
-    void addUser(String username, String password, String nickname);
+    User getUser(String userId);
+
+    User getUserByUsername(String username);
+
+    UserInfo getUserInfo(String userId);
+
+    String addUser(String username, String password, String nickname);
+
     boolean checkAccessToken(String accessToken);
-    void addIdentity(long userId, List<String> identity);
-    Set<Long> getUserSet(List<Long> userId, List<Long> studentId, List<Long> teacherId, List<Long> administratorId);
-    void removeUser(long userId);
-    void modifyNickname(long userId, String nickname);
+
+    List<String> addIdentity(String userId, List<String> identity);
+
+    Set<String> getUserSet(List<String> userId, List<String> studentId, List<String> teacherId, List<String> administratorId);
+
+    void removeUser(String userId);
+
+    void modifyNickname(String userId, String nickname);
+
     List<User> searchUser(String keyword);
 
 }

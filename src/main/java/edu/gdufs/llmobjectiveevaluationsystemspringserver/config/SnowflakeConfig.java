@@ -1,6 +1,6 @@
 package edu.gdufs.llmobjectiveevaluationsystemspringserver.config;
 
-import cn.hutool.core.lang.Snowflake;
+import edu.gdufs.llmobjectiveevaluationsystemspringserver.util.PrefixSnowflake;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -20,10 +20,8 @@ public class SnowflakeConfig {
      * 雪花算法ID生成器
      */
     @Bean
-    protected Snowflake snowflake() {
-        return new Snowflake(MACHINE_BIT, DATA_CENTER_BIT);
+    protected PrefixSnowflake snowflake() {
+        return new PrefixSnowflake(MACHINE_BIT, DATA_CENTER_BIT);
     }
-
-
 
 }

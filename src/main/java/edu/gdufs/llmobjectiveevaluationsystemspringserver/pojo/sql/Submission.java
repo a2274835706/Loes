@@ -11,8 +11,10 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class Submission {
 
-    private long questionId;
-    private long studentID;
+    private String submissionId;
+    private String releaseId;
+    private String studentId;
+    private String questionId;
     private String process;
     private String answer;
     private int score;

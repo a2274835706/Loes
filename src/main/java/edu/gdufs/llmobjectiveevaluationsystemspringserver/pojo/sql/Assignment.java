@@ -11,12 +11,10 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class Assignment {
 
-    private long assignmentId;
-    private long courseId;
-    private long teacherId;
+    private String assignmentId;
+    private String teacherId;
     private String title;
     private String description;
-    private LocalDateTime deadline;
     private LocalDateTime createAt;
     private LocalDateTime updateAt;
 

@@ -11,11 +11,10 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class Question {
 
-    private long questionId;
-    private long assignmentId;
+    private String questionId;
+    private String teacherId;
     private String content;
-    private int score;
-    private int sortOrder;
+    private String answer;
     private String questionType;
     private LocalDateTime createAt;
     private LocalDateTime updateAt;

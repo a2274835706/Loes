@@ -10,8 +10,8 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Class {
-    private Long classId;
-    private Long courseId;
+    private String classId;
+    private String courseId;
     private String className;
     private String state;
     private LocalDateTime createAt;

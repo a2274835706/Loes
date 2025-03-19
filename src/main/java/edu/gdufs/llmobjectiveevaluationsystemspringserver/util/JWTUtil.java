@@ -4,7 +4,6 @@ package edu.gdufs.llmobjectiveevaluationsystemspringserver.util;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
-import edu.gdufs.llmobjectiveevaluationsystemspringserver.pojo.response.UserInfo;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -22,7 +21,7 @@ public class JWTUtil {
     }
 
     // 生成JWT令牌
-    public String generateToken(long userId, String nickname, List<String> identity) {
+    public String generateToken(String userId, String nickname, List<String> identity) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("userId", userId);
         claims.put("nickname", nickname);

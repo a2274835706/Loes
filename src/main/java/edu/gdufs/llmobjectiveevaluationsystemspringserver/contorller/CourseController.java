@@ -22,7 +22,7 @@ public class CourseController {
      */
     @PostMapping("/add")
     public NormalResult<?> addCourse(@RequestBody CourseInfoDto dto) {
-        long courseId = courseService.addCourse(dto.getCourseName(), dto.getDescription());
+        String courseId = courseService.addCourse(dto.getCourseName(), dto.getDescription());
         return NormalResult.success(courseId);
     }
 
@@ -34,10 +34,10 @@ public class CourseController {
      * @return {@link NormalResult}
      */
     @GetMapping("{identity}/join")
-    public NormalResult<?> joinCourse(@PathVariable("identity") String identity, @RequestParam("courseId") long courseId, @RequestParam("id") List<Long> id) {
-        List<Long> success = new ArrayList<>();
+    public NormalResult<?> joinCourse(@PathVariable("identity") String identity, @RequestParam("courseId") String courseId, @RequestParam("id") List<String> id) {
+        List<String> success = new ArrayList<>();
         if (identity.equals("teacher")) {
-            for (long teacherId : id) {
+            for (String teacherId : id) {
                 if (courseService.addTeach(courseId, teacherId)) {
                     success.add(teacherId);
                 }
@@ -45,7 +45,7 @@ public class CourseController {
             return NormalResult.success(success);
         }
         if (identity.equals("student")) {
-            for (long studentId : id) {
+            for (String studentId : id) {
                 if (courseService.addStudy(courseId, studentId)) {
                     success.add(studentId);
                 }
@@ -60,7 +60,7 @@ public class CourseController {
      * @return {@link NormalResult}
      */
     @GetMapping("/info")
-    public NormalResult<?> courseInfo(@RequestParam("courseId") List<Long> courseId) {
+    public NormalResult<?> courseInfo(@RequestParam("courseId") List<String> courseId) {
         return NormalResult.success(courseService.courseList(courseId));
     }
 
@@ -69,7 +69,7 @@ public class CourseController {
      * @return {@link NormalResult}
      */
     @GetMapping("/{identity}/list")
-    public NormalResult<?> courseList(@PathVariable("identity") String identity, @RequestParam("id") List<Long> id) {
+    public NormalResult<?> courseList(@PathVariable("identity") String identity, @RequestParam("id") List<String> id) {
         if (identity.equals("teacher")) {
             return NormalResult.success(courseService.teacherCourseList(id));
         }
@@ -84,7 +84,7 @@ public class CourseController {
      * @return {@link NormalResult}
      */
     @GetMapping("/teachers")
-    public NormalResult<?> teachers(@RequestParam("courseId") List<Long> courseId) {
+    public NormalResult<?> teachers(@RequestParam("courseId") List<String> courseId) {
         return NormalResult.success(courseService.teachers(courseId));
     }
 
@@ -93,7 +93,7 @@ public class CourseController {
      * @return {@link NormalResult}
      */
     @PatchMapping("/state")
-    public NormalResult<?> updateState(@RequestParam("courseId") long courseId, @RequestParam("state") String state) {
+    public NormalResult<?> updateState(@RequestParam("courseId") String courseId, @RequestParam("state") String state) {
         if (courseService.updateState(courseId, state)) {
             return NormalResult.success();
         }
@@ -105,7 +105,7 @@ public class CourseController {
      * @return {@link NormalResult}
      */
     @PatchMapping("/file")
-    public NormalResult<?> fileCourse(@RequestParam("courseId") long courseId) {
+    public NormalResult<?> fileCourse(@RequestParam("courseId") String courseId) {
         if (courseService.teacherFileCourse(courseId)) {
             return NormalResult.success();
         }
@@ -138,7 +138,7 @@ public class CourseController {
      * @return {@link NormalResult}
      */
     @DeleteMapping("/remove")
-    public NormalResult<?> removeCourse(@RequestParam("courseId") long courseId) {
+    public NormalResult<?> removeCourse(@RequestParam("courseId") String courseId) {
         if (courseService.removeCourse(courseId)) {
             return NormalResult.success();
         }

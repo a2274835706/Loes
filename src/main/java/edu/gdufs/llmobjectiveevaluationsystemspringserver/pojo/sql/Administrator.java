@@ -9,8 +9,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Administrator {
 
-    private long userId;
-    private long administratorId;
+    private String userId;
+    private String administratorId;
     private String accessToken;
 
 }

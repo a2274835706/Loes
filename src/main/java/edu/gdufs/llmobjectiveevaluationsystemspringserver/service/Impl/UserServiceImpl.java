@@ -1,6 +1,5 @@
 package edu.gdufs.llmobjectiveevaluationsystemspringserver.service.Impl;
 
-import cn.hutool.core.lang.Snowflake;
 import edu.gdufs.llmobjectiveevaluationsystemspringserver.mapper.UserMapper;
 import edu.gdufs.llmobjectiveevaluationsystemspringserver.pojo.response.UserInfo;
 import edu.gdufs.llmobjectiveevaluationsystemspringserver.pojo.sql.Administrator;
@@ -8,6 +7,7 @@ import edu.gdufs.llmobjectiveevaluationsystemspringserver.pojo.sql.Student;
 import edu.gdufs.llmobjectiveevaluationsystemspringserver.pojo.sql.Teacher;
 import edu.gdufs.llmobjectiveevaluationsystemspringserver.pojo.sql.User;
 import edu.gdufs.llmobjectiveevaluationsystemspringserver.service.UserService;
+import edu.gdufs.llmobjectiveevaluationsystemspringserver.util.PrefixSnowflake;
 import edu.gdufs.llmobjectiveevaluationsystemspringserver.util.SHA256Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,15 +24,15 @@ public class UserServiceImpl implements UserService {
     private UserMapper userMapper;
 
     @Autowired
-    private Snowflake snowflake;
+    private PrefixSnowflake snowflake;
 
     @Override
-    public User getUser(long userId) {
+    public User getUser(String userId) {
         return userMapper.getUserByUserId(userId);
     }
 
     @Override
-    public User getUser(String username) {
+    public User getUserByUsername(String username) {
         return userMapper.getUserByUsername(username);
     }
 
@@ -42,7 +42,7 @@ public class UserServiceImpl implements UserService {
      * @return 用户信息
      */
     @Override
-    public UserInfo getUserInfo(long userId) {
+    public UserInfo getUserInfo(String userId) {
         UserInfo info = new UserInfo();
         info.setIdentity(new ArrayList<>());
         Student student = userMapper.getStudentByUserId(userId);
@@ -64,8 +64,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void addUser(String username, String password, String nickname) {
-        userMapper.addUser(snowflake.nextId(), username, password, nickname);
+    public String addUser(String username, String password, String nickname) {
+        String userId = snowflake.nextPrefixId(PrefixSnowflake.PREFIX_USER);
+        userMapper.addUser(userId, username, password, nickname);
+        return userId;
     }
 
     @Override
@@ -73,39 +75,43 @@ public class UserServiceImpl implements UserService {
         return userMapper.checkAccessToken(accessToken) != null;
     }
 
-    /**
-     * 为用户添加新身份
-     * @param identity 待添加的新身份
-     */
     @Override
-    public void addIdentity(long userId, List<String> identity) {
+    public List<String> addIdentity(String userId, List<String> identity) {
+        List<String> list = new ArrayList<>();
         for (String i : identity) {
             if (i.equals("student")) {
                 if (userMapper.getStudentByUserId(userId) == null) {
-                    userMapper.addStudent(snowflake.nextId(), userId);
+                    String id = snowflake.nextPrefixId(PrefixSnowflake.PREFIX_STUDENT);
+                    userMapper.addStudent(id, userId);
+                    list.add(id);
                 }
             }
             if (i.equals("teacher")) {
                 if (userMapper.getTeacherByUserId(userId) == null) {
-                    userMapper.addTeacher(snowflake.nextId(), userId);
+                    String id = snowflake.nextPrefixId(PrefixSnowflake.PREFIX_TEACHER);
+                    userMapper.addTeacher(id, userId);
+                    list.add(id);
                 }
             }
             if (i.equals("administrator")) {
                 if (userMapper.getAdministratorByUserId(userId) == null) {
-                    userMapper.addAdministrator(snowflake.nextId(), userId, SHA256Util.toSHA256(String.valueOf(snowflake.nextId())));
+                    String id = snowflake.nextPrefixId(PrefixSnowflake.PREFIX_ADMINISTRATOR);
+                    userMapper.addAdministrator(id, userId, SHA256Util.toSHA256(String.valueOf(snowflake.nextId())));
+                    list.add(id);
                 }
             }
         }
+        return list;
     }
 
     @Override
-    public Set<Long> getUserSet(List<Long> userId, List<Long> studentId, List<Long> teacherId, List<Long> administratorId) {
-        Set<Long> set = new HashSet<>();
+    public Set<String> getUserSet(List<String> userId, List<String> teacherId, List<String> studentId, List<String> administratorId) {
+        Set<String> set = new HashSet<>();
         if (userId != null && !userId.isEmpty()) {
             set.addAll(userId);
         }
         if (studentId != null && !studentId.isEmpty()) {
-            for (long id : studentId) {
+            for (String id : studentId) {
                 Student s = userMapper.getStudentByStudentId(id);
                 if (s != null) {
                     set.add(s.getUserId());
@@ -113,7 +119,7 @@ public class UserServiceImpl implements UserService {
             }
         }
         if (teacherId != null && !teacherId.isEmpty()) {
-            for (long id : teacherId) {
+            for (String id : teacherId) {
                 Teacher t = userMapper.getTeacherByTeacherId(id);
                 if (t != null) {
                     set.add(t.getUserId());
@@ -121,7 +127,7 @@ public class UserServiceImpl implements UserService {
             }
         }
         if (administratorId != null && !administratorId.isEmpty()) {
-            for (long id : administratorId) {
+            for (String id : administratorId) {
                 Administrator a = userMapper.getAdministratorByAdministratorId(id);
                 if (a != null) {
                     set.add(a.getUserId());
@@ -132,12 +138,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void removeUser(long userId) {
+    public void removeUser(String userId) {
         userMapper.removeUser(userId);
     }
 
     @Override
-    public void modifyNickname(long userId, String nickname) {
+    public void modifyNickname(String userId, String nickname) {
         userMapper.modifyNickName(userId, nickname);
     }
 

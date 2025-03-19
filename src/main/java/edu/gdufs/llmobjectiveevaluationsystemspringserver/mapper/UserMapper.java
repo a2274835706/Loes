@@ -11,52 +11,58 @@ import java.util.List;
 @Mapper
 public interface UserMapper {
 
-    @Select("select * from `user` where `user_id`=#{userId}")
-    User getUserByUserId(long userId);
+    @Select("select * from user where user_id=#{userId}")
+    User getUserByUserId(String userId);
 
-    @Select("select * from `user` where `username`=#{username}")
+    @Select("select * from user where username=#{username}")
     User getUserByUsername(String username);
 
-    @Select("select * from `student` where `user_id`=#{userId}")
-    Student getStudentByUserId(long userId);
+    @Select("select * from student where user_id=#{userId}")
+    Student getStudentByUserId(String userId);
 
-    @Select("select * from `student` where `student_id`=#{studentId}")
-    Student getStudentByStudentId(long studentId);
+    @Select("select * from student where student_id=#{studentId}")
+    Student getStudentByStudentId(String studentId);
 
-    @Select("select * from `teacher` where `user_id`=#{userId}")
-    Teacher getTeacherByUserId(long userId);
+    @Select("select * from teacher where user_id=#{userId}")
+    Teacher getTeacherByUserId(String userId);
 
-    @Select("select * from `teacher` where `teacher_id`=#{teacherId}")
-    Teacher getTeacherByTeacherId(long teacherId);
+    @Select("select * from teacher where teacher_id=#{teacherId}")
+    Teacher getTeacherByTeacherId(String teacherId);
 
-    @Select("select * from `administrator` where `user_id`=#{userId}")
-    Administrator getAdministratorByUserId(long userId);
+    @Select("select * from teacher, user where teacher_id=#{teacherId} and teacher.user_id=user.user_id")
+    User getUserByTeacherId(String teacherId);
 
-    @Select("select * from `administrator` where `administrator_id`=#{administratorId}")
-    Administrator getAdministratorByAdministratorId(long administratorId);
+    @Select("select * from student, user where student_id=#{studentId} and student.user_id=user.user_id")
+    User getUserByStudentId(String studentId);
 
-    @Insert("insert into `user` values (#{userId}, #{username}, #{password}, #{nickname}, now(), now())")
-    void addUser(long userId, String username, String password, String nickname);
+    @Select("select * from administrator where user_id=#{userId}")
+    Administrator getAdministratorByUserId(String userId);
 
-    @Select("select * from `administrator` where `access_token`=#{accessToken}")
+    @Select("select * from administrator where administrator_id=#{administratorId}")
+    Administrator getAdministratorByAdministratorId(String administratorId);
+
+    @Insert("insert into user values (#{userId}, #{username}, #{password}, #{nickname}, now(), now())")
+    void addUser(String userId, String username, String password, String nickname);
+
+    @Select("select * from administrator where access_token=#{accessToken}")
     Administrator checkAccessToken(String accessToken);
 
-    @Insert("insert into `student` values (#{studentId}, #{userId})")
-    void addStudent(long studentId, long userId);
+    @Insert("insert into student values (#{studentId}, #{userId})")
+    void addStudent(String studentId, String userId);
 
-    @Insert("insert into `teacher` values (#{teacherId}, #{userId})")
-    void addTeacher(long teacherId, long userId);
+    @Insert("insert into teacher values (#{teacherId}, #{userId})")
+    void addTeacher(String teacherId, String userId);
 
-    @Insert("insert into `administrator` values (#{administratorId}, #{userId}, #{accessToken})")
-    void addAdministrator(long administratorId, long userId, String accessToken);
+    @Insert("insert into administrator values (#{administratorId}, #{userId}, #{accessToken})")
+    void addAdministrator(String administratorId, String userId, String accessToken);
 
-    @Delete("delete from `user` where `user_id`=#{userId}")
-    void removeUser(long userId);
+    @Delete("delete from user where user_id=#{userId}")
+    void removeUser(String userId);
 
-    @Update("update `user` set `nickname`=#{nickname}, `update_at`=now() where `user_id`=#{userId}")
-    void modifyNickName(long userId, String nickname);
+    @Update("update user set nickname=#{nickname}, update_at=now() where user_id=#{userId}")
+    void modifyNickName(String userId, String nickname);
 
-    @Select("select * from `user` where `nickname` like #{keyword}")
+    @Select("select * from user where nickname like #{keyword}")
     List<User> searchUser(String keyword);
 
 }

@@ -100,7 +100,6 @@ create table `assignment` (
 
 create table `question` (
     `question_id` bigint unsigned not null,
-    `assignment_id` bigint unsigned not null,
     `content` json not null,
     `score` int not null default 0,
     `sort_order` int not null default 0,
@@ -108,7 +107,6 @@ create table `question` (
     `create_at` datetime not null,
     `update_at` datetime not null,
     primary key (`question_id`),
-    foreign key (`assignment_id`) references `assignment`(`assignment_id`) on delete cascade,
     check(`question_type` in ('choice', 'fill-blank', 'programming', 'essay'))
 );
 

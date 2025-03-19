@@ -8,19 +8,19 @@ import java.util.Map;
 
 public interface ClassService {
 
-    long addClass(long courseId, String className, String state);
+    String addClass(String courseId, String className, String state);
 
-    List<Class> classInfo(List<Long> classId);
+    List<Class> classInfo(List<String> classId);
 
-    Map<Long, List<Class>> classList(List<Long> courseId);
+    Map<String, List<Class>> classList(List<String> courseId);
 
-    Map<Long, List<Long>> students(List<Long> classId);
+    Map<String, List<String>> students(List<String> classId);
 
-    List<Long> joinClass(List<Long> studentId, long classId);
+    List<String> joinClass(List<String> studentId, String classId);
 
-    boolean removeClass(long classId);
+    boolean removeClass(String classId);
 
-    boolean modifyClass(long classId, String className);
+    boolean modifyClass(String classId, String className);
 
 
 }

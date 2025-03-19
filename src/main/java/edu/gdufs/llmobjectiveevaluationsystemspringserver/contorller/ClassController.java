@@ -28,7 +28,7 @@ public class ClassController {
     public NormalResult<?> addClass(@RequestBody ClassInfoDto dto){
         Course course = courseService.courseInfo(dto.getCourseId());
         if (course != null){
-            long classId = classService.addClass(dto.getCourseId(), dto.getClassName(), course.getState());
+            String classId = classService.addClass(dto.getCourseId(), dto.getClassName(), course.getState());
             return NormalResult.success(classId);
         }
         return NormalResult.error(NormalResult.EXISTENCE_ERROR);
@@ -39,12 +39,12 @@ public class ClassController {
      * @return {@link NormalResult}
      */
     @GetMapping("/list")
-    public NormalResult<?> classList(@RequestParam("courseId") List<Long> courseId) {
+    public NormalResult<?> classList(@RequestParam("courseId") List<String> courseId) {
         return NormalResult.success(classService.classList(courseId));
     }
 
     @GetMapping("/info")
-    public NormalResult<?> classInfo(@RequestParam("classId") List<Long> classId) {
+    public NormalResult<?> classInfo(@RequestParam("classId") List<String> classId) {
         return NormalResult.success(classService.classInfo(classId));
     }
 
@@ -53,7 +53,7 @@ public class ClassController {
      * @return {@link NormalResult}
      */
     @GetMapping("/students")
-    public NormalResult<?> students(@RequestParam("classId") List<Long> classId){
+    public NormalResult<?> students(@RequestParam("classId") List<String> classId){
         return NormalResult.success(classService.students(classId));
     }
 
@@ -62,8 +62,8 @@ public class ClassController {
      * @return {@link NormalResult}
      */
     @GetMapping("/join")
-    public NormalResult<?> joinClass(@RequestParam("studentId") List<Long> studentId,
-                                     @RequestParam("classId") long classId){
+    public NormalResult<?> joinClass(@RequestParam("studentId") List<String> studentId,
+                                     @RequestParam("classId") String classId){
         if (!classService.classInfo(List.of(classId)).isEmpty()) {
             return NormalResult.success(classService.joinClass(studentId, classId));
         }
@@ -87,7 +87,7 @@ public class ClassController {
      * @return {@link NormalResult}
      */
     @DeleteMapping("/remove")
-    public NormalResult<?> removeClassByClassId(@RequestParam("classId") long classId){
+    public NormalResult<?> removeClassByClassId(@RequestParam("classId") String classId){
         if( classService.removeClass(classId)) {
             return NormalResult.success();
         }

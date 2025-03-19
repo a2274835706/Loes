@@ -7,19 +7,22 @@ import java.util.Map;
 
 public interface SubmissionService {
 
-    boolean addSubmission(long questionId, long studentId, String process, String answer);
+    String addSubmission(String releaseId, String studentId, String questionId, String process, String answer);
 
-    Submission submissionInfo(long questionId, long studentId);
+    List<Submission> submissionInfo(List<String> submissionId);
 
-    Map<Long, List<Submission>> submissionOfStudent(List<Long> studentId);
+    Map<String, Map<String, List<Submission>>> submissionOfRelease(List<String> releaseId);
 
-    Map<Long, List<Submission>> submissionOfQuestion(List<Long> questionId);
+    Map<String, Map<String, List<Submission>>> submissionOfStudent(List<String> studentId);
 
-    boolean modifySubmission(long questionId, long studentId, String process, String answer);
+    Map<String, List<Submission>> submissionOfStudentOfReleases(String studentId, List<String> releaseId);
 
-    boolean correctAnswer(long questionId, long studentId, int score, String feedback);
+    Map<String, List<Submission>> submissionOfReleaseOfStudents(List<String> studentId, String releaseId);
 
-    boolean deleteSubmission(long questionId, long studentId);
+    boolean deleteSubmission(String submissionId);
 
+    boolean updateSubmission(String submissionId, String process, String answer);
+
+    boolean correctSubmission(String submissionId, int score, String feedback);
 
 }

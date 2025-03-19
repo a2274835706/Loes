@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class Course {
 
-    private long courseId;
+    private String courseId;
     private String courseName;
     private String description;
     private String state;

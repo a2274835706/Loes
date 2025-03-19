@@ -1,10 +1,10 @@
 package edu.gdufs.llmobjectiveevaluationsystemspringserver.service.Impl;
 
-import cn.hutool.core.lang.Snowflake;
-import edu.gdufs.llmobjectiveevaluationsystemspringserver.mapper.AssignmentMapper;
 import edu.gdufs.llmobjectiveevaluationsystemspringserver.mapper.QuestionMapper;
+import edu.gdufs.llmobjectiveevaluationsystemspringserver.mapper.UserMapper;
 import edu.gdufs.llmobjectiveevaluationsystemspringserver.pojo.sql.Question;
 import edu.gdufs.llmobjectiveevaluationsystemspringserver.service.QuestionService;
+import edu.gdufs.llmobjectiveevaluationsystemspringserver.util.PrefixSnowflake;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,44 +17,47 @@ import java.util.Map;
 public class QuestionServiceImpl implements QuestionService {
 
     @Autowired
-    private AssignmentMapper assignmentMapper;
-
-    @Autowired
     private QuestionMapper questionMapper;
 
     @Autowired
-    private Snowflake snowflake;
+    private UserMapper userMapper;
+
+    @Autowired
+    private PrefixSnowflake snowflake;
 
     @Override
-    public long addQuestion(long assignmentId, String content, int score, int sortOrder, String questionType) {
-        if (assignmentMapper.assignmentInfo(assignmentId) != null) {
-            long questionId = snowflake.nextId();
-            questionMapper.addQuestion(questionId, assignmentId, content, score, sortOrder, questionType);
+    public String addQuestion(String teacherId, String content, String answer, String questionType) {
+        if (userMapper.getTeacherByTeacherId(teacherId) != null) {
+            String questionId = snowflake.nextPrefixId(PrefixSnowflake.PREFIX_QUESTION);
+            questionMapper.addQuestion(questionId, teacherId, content, answer, questionType);
             return questionId;
         }
-        return -1;
+        return null;
     }
 
     @Override
-    public List<Question> questionInfo(List<Long> questionId) {
+    public List<Question> questionInfo(List<String> questionId) {
         List<Question> list = new ArrayList<>();
-        for (long id : questionId) {
-            list.add(questionMapper.questionInfo(id));
+        for (String id : questionId) {
+            Question question = questionMapper.questionInfo(id);
+            if (question != null) {
+                list.add(question);
+            }
         }
         return list;
     }
 
     @Override
-    public Map<Long, List<Question>> questionList(List<Long> assignmentId) {
-        Map<Long, List<Question>> map = new HashMap<>();
-        for (long id : assignmentId) {
-            map.put(id, questionMapper.questionList(id));
+    public Map<String, List<Question>> questionList(List<String> teacherId) {
+        Map<String, List<Question>> map = new HashMap<>();
+        for (String id : teacherId) {
+            map.put(id, questionMapper.questionOfTeacher(id));
         }
         return map;
     }
 
     @Override
-    public boolean deleteQuestion(long questionId) {
+    public boolean deleteQuestion(String questionId) {
         if (questionMapper.questionInfo(questionId) != null) {
             questionMapper.deleteQuestion(questionId);
             return true;
@@ -63,9 +66,9 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
-    public boolean updateQuestion(long questionId, String content, int score, int sortOrder, String questionType) {
+    public boolean updateQuestion(String questionId, String content, String answer, String questionType) {
         if (questionMapper.questionInfo(questionId) != null) {
-            questionMapper.updateQuestion(questionId, content, score, sortOrder, questionType);
+            questionMapper.updateQuestion(questionId, content, answer, questionType);
             return true;
         }
         return false;

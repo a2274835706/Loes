@@ -1,13 +1,11 @@
 package edu.gdufs.llmobjectiveevaluationsystemspringserver.service.Impl;
 
-import cn.hutool.core.lang.Snowflake;
 import edu.gdufs.llmobjectiveevaluationsystemspringserver.mapper.ClassMapper;
 import edu.gdufs.llmobjectiveevaluationsystemspringserver.mapper.CourseMapper;
 import edu.gdufs.llmobjectiveevaluationsystemspringserver.mapper.UserMapper;
-import edu.gdufs.llmobjectiveevaluationsystemspringserver.pojo.sql.Class;
 import edu.gdufs.llmobjectiveevaluationsystemspringserver.pojo.sql.Course;
-import edu.gdufs.llmobjectiveevaluationsystemspringserver.service.ClassService;
 import edu.gdufs.llmobjectiveevaluationsystemspringserver.service.CourseService;
+import edu.gdufs.llmobjectiveevaluationsystemspringserver.util.PrefixSnowflake;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +17,7 @@ import java.util.Map;
 public class CourseServiceImpl implements CourseService {
 
     @Autowired
-    private Snowflake snowflake;
+    private PrefixSnowflake snowflake;
 
     @Autowired
     private CourseMapper courseMapper;
@@ -31,18 +29,20 @@ public class CourseServiceImpl implements CourseService {
     private UserMapper userMapper;
 
     @Override
-    public long addCourse(String courseName, String description) {
-        long courseId = snowflake.nextId();
+    public String addCourse(String courseName, String description) {
+        String courseId = snowflake.nextPrefixId(PrefixSnowflake.PREFIX_COURSE);
         courseMapper.addCourse(courseId, courseName, description);
         return courseId;
     }
 
     @Override
-    public boolean updateState(long courseId, String state) {
+    public boolean updateState(String courseId, String state) {
         if (state.equals("not-started") || state.equals("active")) {
             if (courseInfo(courseId) != null) {
                 courseMapper.updateState(courseId, state);
-                classMapper.updateStateForCourse(courseId, state);
+                if (!classMapper.classList(courseId).isEmpty()) {
+                    classMapper.updateStateForCourse(courseId, state);
+                }
                 return true;
             }
         }
@@ -50,7 +50,7 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public boolean addTeach(long courseId, long teacherId) {
+    public boolean addTeach(String courseId, String teacherId) {
         if (courseInfo(courseId) != null && userMapper.getTeacherByTeacherId(teacherId) != null) {
             if (courseMapper.checkTeach(courseId, teacherId) == null) {
                 courseMapper.addTeach(courseId, teacherId);
@@ -61,7 +61,7 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public boolean addStudy(long courseId, long studentId) {
+    public boolean addStudy(String courseId, String studentId) {
         if (courseInfo(courseId) != null && userMapper.getStudentByStudentId(studentId) != null) {
             if (courseMapper.checkStudy(courseId, studentId) == null) {
                 courseMapper.addStudy(courseId, studentId);
@@ -72,48 +72,48 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public Course courseInfo(long courseId) {
+    public Course courseInfo(String courseId) {
         return courseMapper.courseInfo(courseId);
     }
 
     @Override
-    public Map<Long, Course> courseList(List<Long> courseId) {
-        Map<Long, Course> courseList = new HashMap<>();
-        for (Long id : courseId) {
+    public Map<String, Course> courseList(List<String> courseId) {
+        Map<String, Course> courseList = new HashMap<>();
+        for (String id : courseId) {
             courseList.put(id, courseMapper.courseInfo(id));
         }
         return courseList;
     }
 
     @Override
-    public Map<Long, List<Long>> studentCourseList(List<Long> studentId) {
-        Map<Long, List<Long>> map = new HashMap<>();
-        for (Long id : studentId) {
+    public Map<String, List<String>> studentCourseList(List<String> studentId) {
+        Map<String, List<String>> map = new HashMap<>();
+        for (String id : studentId) {
             map.put(id, courseMapper.getStudyList(id));
         }
         return map;
     }
 
     @Override
-    public Map<Long, List<Long>> teacherCourseList(List<Long> teacherId) {
-        Map<Long, List<Long>> map = new HashMap<>();
-        for (Long id : teacherId) {
+    public Map<String, List<String>> teacherCourseList(List<String> teacherId) {
+        Map<String, List<String>> map = new HashMap<>();
+        for (String id : teacherId) {
             map.put(id, courseMapper.getTeachList(id));
         }
         return map;
     }
 
     @Override
-    public Map<Long, List<Long>> teachers(List<Long> teacherId) {
-        Map<Long, List<Long>> map = new HashMap<>();
-        for (Long id : teacherId) {
+    public Map<String, List<String>> teachers(List<String> teacherId) {
+        Map<String, List<String>> map = new HashMap<>();
+        for (String id : teacherId) {
             map.put(id, courseMapper.getTeachers(id));
         }
         return map;
     }
 
     @Override
-    public boolean teacherFileCourse(long courseId) {
+    public boolean teacherFileCourse(String courseId) {
         if (courseInfo(courseId) != null) {
             courseMapper.file(courseId);
             classMapper.fileForCourse(courseId);
@@ -123,7 +123,7 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public boolean modifyCourse(long courseId, String courseName, String description) {
+    public boolean modifyCourse(String courseId, String courseName, String description) {
         if (courseInfo(courseId) != null) {
             courseMapper.updateInfo(courseId, courseName, description);
             return true;
@@ -137,7 +137,7 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public boolean removeCourse(long courseId) {
+    public boolean removeCourse(String courseId) {
         if (courseInfo(courseId) != null) {
             courseMapper.removeCourse(courseId);
             return true;

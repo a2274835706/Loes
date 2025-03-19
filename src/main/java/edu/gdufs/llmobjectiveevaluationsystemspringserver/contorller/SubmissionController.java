@@ -17,22 +17,38 @@ public class SubmissionController {
 
     @PostMapping("/add")
     public NormalResult<?> addSubmission(@RequestBody SubmissionInfoDto dto) {
-        if (submissionService.addSubmission(dto.getQuestionId(), dto.getStudentId(), dto.getProcess(), dto.getAnswer())) {
-            return NormalResult.success();
+        String submissionId = submissionService.addSubmission(dto.getReleaseId(), dto.getStudentId(), dto.getQuestionId(), dto.getProcess(), dto.getAnswer());
+        if (submissionId != null) {
+            return NormalResult.success(submissionId);
         }
         return NormalResult.error(NormalResult.EXISTENCE_ERROR);
     }
 
     @GetMapping("/info")
-    public NormalResult<?> submissionInfo(@RequestParam("questionId") long questionId,
-                                          @RequestParam("studentId") long studentId) {
-        return NormalResult.success(submissionService.submissionInfo(questionId, studentId));
+    public NormalResult<?> submissionInfo(@RequestParam("submissionId") List<String> submissionId) {
+        return NormalResult.success(submissionService.submissionInfo(submissionId));
+    }
+
+    @DeleteMapping("/remove")
+    public NormalResult<?> deleteSubmission(@RequestParam("submissionId") String submissionId) {
+        if (submissionService.deleteSubmission(submissionId)) {
+            return NormalResult.success();
+        }
+        return NormalResult.error(NormalResult.EXISTENCE_ERROR);
+    }
+
+    @PatchMapping("/modify")
+    public NormalResult<?> updateSubmission(@RequestBody SubmissionInfoDto dto) {
+        if (submissionService.updateSubmission(dto.getSubmissionId(), dto.getProcess(), dto.getAnswer())) {
+            return NormalResult.success();
+        }
+        return NormalResult.error(NormalResult.EXISTENCE_ERROR);
     }
 
     @GetMapping("/{identity}/list")
-    public NormalResult<?> submissionList(@PathVariable("identity") String identity, @RequestParam("id") List<Long> id) {
-        if (identity.equals("question")) {
-            return NormalResult.success(submissionService.submissionOfQuestion(id));
+    public NormalResult<?> submissionList(@PathVariable("identity") String identity, @RequestParam("id") List<String> id) {
+        if (identity.equals("release")) {
+            return NormalResult.success(submissionService.submissionOfRelease(id));
         }
         if (identity.equals("student")) {
             return NormalResult.success(submissionService.submissionOfStudent(id));
@@ -40,32 +56,26 @@ public class SubmissionController {
         return NormalResult.error(NormalResult.VALIDATION_ERROR);
     }
 
-    @PatchMapping("/modify")
-    public NormalResult<?> modify(@RequestBody SubmissionInfoDto dto) {
-        if (submissionService.modifySubmission(dto.getQuestionId(), dto.getStudentId(), dto.getProcess(), dto.getAnswer())) {
-            return NormalResult.success();
+    @GetMapping("/list/{identity}")
+    public NormalResult<?> submissionListDetail(@PathVariable("identity") String identity, @RequestParam("idList") List<String> idList, @RequestParam("id") String id) {
+        if (identity.equals("student")) {
+            return NormalResult.success(submissionService.submissionOfReleaseOfStudents(idList, id));
         }
-        return NormalResult.error(NormalResult.EXISTENCE_ERROR);
+        if (identity.equals("release")) {
+            return NormalResult.success(submissionService.submissionOfStudentOfReleases(id, idList));
+        }
+        return NormalResult.error(NormalResult.VALIDATION_ERROR);
     }
 
     @PatchMapping("/correct")
-    public NormalResult<?> correct(@RequestParam("questionId") long questionId,
-                                   @RequestParam("studentId") long studentId,
-                                   @RequestParam("score") int score,
-                                   @RequestParam("feedback") String feedback) {
-        if (submissionService.correctAnswer(questionId, studentId, score, feedback)) {
+    public NormalResult<?> correct(@RequestBody SubmissionInfoDto dto) {
+        if (submissionService.correctSubmission(dto.getSubmissionId(), dto.getScore(), dto.getFeedback())) {
             return NormalResult.success();
         }
         return NormalResult.error(NormalResult.EXISTENCE_ERROR);
     }
 
-    @DeleteMapping("/remove")
-    public NormalResult<?> remove(@RequestParam("questionId") long questionId,
-                                  @RequestParam("studentId") long studentId) {
-        if (submissionService.deleteSubmission(questionId, studentId)) {
-            return NormalResult.success();
-        }
-        return NormalResult.error(NormalResult.EXISTENCE_ERROR);
-    }
+
+
 
 }
