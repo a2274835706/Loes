@@ -1,15 +1,25 @@
 package edu.gdufs.llmobjectiveevaluationsystemspringserver.contorller;
 
 import edu.gdufs.llmobjectiveevaluationsystemspringserver.dto.ClassInfoDto;
+import edu.gdufs.llmobjectiveevaluationsystemspringserver.mapper.UserMapper;
+import edu.gdufs.llmobjectiveevaluationsystemspringserver.pojo.response.UserInfo;
 import edu.gdufs.llmobjectiveevaluationsystemspringserver.pojo.result.NormalResult;
+import edu.gdufs.llmobjectiveevaluationsystemspringserver.pojo.sql.Class;
 import edu.gdufs.llmobjectiveevaluationsystemspringserver.pojo.sql.Course;
+import edu.gdufs.llmobjectiveevaluationsystemspringserver.pojo.sql.Teacher;
 import edu.gdufs.llmobjectiveevaluationsystemspringserver.service.ClassService;
 import edu.gdufs.llmobjectiveevaluationsystemspringserver.service.CourseService;
+import edu.gdufs.llmobjectiveevaluationsystemspringserver.service.UserService;
+import edu.gdufs.llmobjectiveevaluationsystemspringserver.util.JWTUtil;
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
+@Slf4j
 @RestController
 @RequestMapping("/class")
 public class ClassController {
@@ -19,6 +29,12 @@ public class ClassController {
 
     @Autowired
     private CourseService courseService;
+
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private JWTUtil jwtUtil;
 
     /**
      * 添加班级
@@ -75,9 +91,37 @@ public class ClassController {
      * @return {@link NormalResult}
      */
     @PatchMapping("/modify")
-    public NormalResult<?> modifyClass(@RequestBody ClassInfoDto dto) {
-        if(classService.modifyClass(dto.getClassId(), dto.getClassName())) {
-            return NormalResult.success();
+    public NormalResult<?> modifyClass(@RequestBody ClassInfoDto dto,HttpServletRequest request) {
+        //获取令牌
+        String token = request.getHeader("Authorization");
+        //如果令牌为空，返回错误信息
+        if (token == null || token.isEmpty()) {
+            return NormalResult.error(NormalResult.AUTHORIZED_ERROR);
+        }
+        //获取令牌里的身份
+        String identity = jwtUtil.verifyToken(token).get("identity").toString();
+        if(identity.contains("administrator")) {
+            if (classService.modifyClass(dto.getClassId(), dto.getClassName())) {
+                return NormalResult.success();
+            }
+        }
+        if(identity.contains("teacher")) {
+            //获取当前用户id
+            String userId = (String) jwtUtil.verifyToken(token).get("userId");
+            //根据用户信息获取用户信息
+            UserInfo userInfo = userService.getUserInfo(userId);
+            //从用户信息里获取教师id
+            String teacherId = userInfo.getTeacherId();
+            //获取课程id
+            String courseId = classService.getClassInfoByClassId(dto.getClassId()).getCourseId();
+            //获取该课程对应的教师列表
+            Map<String, List<String>> teacherCourse = courseService.teachers(List.of(courseId));
+            //如果教师列表包含当前教师id，则修改班级信息
+            if (teacherCourse.get(courseId).contains(teacherId)) {
+                if (classService.modifyClass(dto.getClassId(), dto.getClassName())) {
+                    return NormalResult.success();
+                }
+            }
         }
         return NormalResult.error(NormalResult.EXISTENCE_ERROR);
     }
@@ -87,9 +131,44 @@ public class ClassController {
      * @return {@link NormalResult}
      */
     @DeleteMapping("/remove")
-    public NormalResult<?> removeClassByClassId(@RequestParam("classId") String classId){
-        if( classService.removeClass(classId)) {
-            return NormalResult.success();
+    public NormalResult<?> removeClassByClassId(@RequestParam("classId") String classId, HttpServletRequest request){
+        //获取令牌
+        String token =  request.getHeader("Authorization");
+        //如果令牌为空，返回错误信息
+        if (token == null || token.isEmpty()) {
+            return NormalResult.error(NormalResult.AUTHORIZED_ERROR);
+        }
+        //获取令牌里的身份
+        String identity = jwtUtil.verifyToken(token).get("identity").toString();
+        //根据classId获取班级信息
+        Class classInfo = classService.getClassInfoByClassId(classId);
+        //如果班级信息为空，返回错误信息
+        if(classInfo == null){
+            return NormalResult.error(NormalResult.IDENTIFICATION_ERROR);
+        }
+        //如果身份是管理员，则删除班级
+        if(identity.contains("administrator")) {
+            if (classService.removeClass(classId)) {
+                return NormalResult.success();
+            }
+        }
+        //如果身份是教师
+        if(identity.contains("teacher")) {
+            //获取当前用户id
+            String userId = (String) jwtUtil.verifyToken(token).get("userId");
+            //根据用户信息获取用户信息
+            UserInfo userInfo = userService.getUserInfo(userId);
+            //从用户信息里获取教师id
+            String teacherId = userInfo.getTeacherId();
+            //获取课程id
+            String courseId = classInfo.getCourseId();
+            //如果教师id在课程的教师列表里，则删除班级
+            Map<String, List<String>> teacherList = courseService.teachers(List.of(courseId));
+            if (teacherList.get(courseId).contains(teacherId)) {
+                if (classService.removeClass(classId)) {
+                    return NormalResult.success();
+                }
+            }
         }
         return NormalResult.error(NormalResult.EXISTENCE_ERROR);
     }

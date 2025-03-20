@@ -32,6 +32,14 @@ public class ClassServiceImpl implements ClassService {
     }
 
     @Override
+    public Class getClassInfoByClassId(String classId) {
+        if (classMapper.classInfo(classId) != null) {
+            return classMapper.classInfo(classId);
+        }
+        return null;
+    }
+
+    @Override
     public List<Class> classInfo(List<String> classId) {
         List<Class> classList = new ArrayList<>();
         for (String id : classId) {
