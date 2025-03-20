@@ -17,8 +17,12 @@ public class AssignmentController {
     private AssignmentService assignmentService;
 
     @PostMapping("/add")
-    public NormalResult<?> addAssignment(AssignmentInfoDto dto) {
-        return NormalResult.success(assignmentService.addAssignment(dto.getTeacherId(), dto.getTitle(), dto.getDescription()));
+    public NormalResult<?> addAssignment(@RequestBody AssignmentInfoDto dto) {
+        String assignmentId = assignmentService.addAssignment(dto.getTeacherId(), dto.getTitle(), dto.getDescription());
+        if (assignmentId != null) {
+            return NormalResult.success(assignmentId);
+        }
+        return NormalResult.error(NormalResult.EXISTENCE_ERROR);
     }
 
     @GetMapping("/info")
@@ -50,6 +54,7 @@ public class AssignmentController {
     @PostMapping("/question/add")
     public NormalResult<?> addAssignmentQuestion(@RequestParam("assignmentId") String assignmentId,
                                                  @RequestBody List<AssignmentQuestionInfoDto> questions) {
+        System.out.println(questions);
         return NormalResult.success(assignmentService.addAssignmentQuestion(assignmentId, questions));
     }
 

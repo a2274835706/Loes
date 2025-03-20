@@ -12,6 +12,6 @@ public class AssignmentQuestionInfoDto {
     private String assignmentQuestionId;
     private String questionId;
     private int score;
-    private int soreOrder;
+    private int sortOrder;
 
 }

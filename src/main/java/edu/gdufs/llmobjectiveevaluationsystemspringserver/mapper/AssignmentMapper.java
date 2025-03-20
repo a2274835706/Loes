@@ -10,7 +10,7 @@ import java.util.List;
 @Mapper
 public interface AssignmentMapper {
 
-    @Insert("insert into assignment values (#{assignment}, #{teacherId}, #{title}, #{description}, now(), now())")
+    @Insert("insert into assignment values (#{assignmentId}, #{teacherId}, #{title}, #{description}, now(), now())")
     void addAssignment(String assignmentId, String teacherId, String title, String description);
 
     @Select("select * from assignment where assignment_id=#{assignment}")

@@ -37,10 +37,10 @@ public class AssignmentServiceImpl implements AssignmentService {
     private PrefixSnowflake snowflake;
 
     @Override
-    public String addAssignment(String teacherID, String title, String description) {
-        if (userMapper.getTeacherByTeacherId(teacherID) != null) {
+    public String addAssignment(String teacherId, String title, String description) {
+        if (userMapper.getTeacherByTeacherId(teacherId) != null) {
             String assignmentId = snowflake.nextPrefixId(PrefixSnowflake.PREFIX_ASSIGNMENT);
-            assignmentMapper.addAssignment(assignmentId, teacherID, title, description);
+            assignmentMapper.addAssignment(assignmentId, teacherId, title, description);
             return assignmentId;
         }
         return null;
@@ -86,13 +86,13 @@ public class AssignmentServiceImpl implements AssignmentService {
     }
 
     @Override
-    public Map<String, String> addAssignmentQuestion(String assignmentID, List<AssignmentQuestionInfoDto> dto) {
+    public Map<String, String> addAssignmentQuestion(String assignmentId, List<AssignmentQuestionInfoDto> dto) {
         Map<String, String> map = new HashMap<>();
-        if (questionMapper.questionInfo(assignmentID) != null) {
+        if (assignmentMapper.assignmentInfo(assignmentId) != null) {
             for (AssignmentQuestionInfoDto d : dto) {
                 String assignmentQuestionId = snowflake.nextPrefixId(PrefixSnowflake.PREFIX_ASSIGNMENT_QUESTION);
-                if (questionMapper.questionInfo(assignmentQuestionId) != null) {
-                    assignmentMapper.addAssignmentQuestion(assignmentQuestionId, assignmentID, d.getQuestionId(), d.getScore(), d.getSoreOrder());
+                if (questionMapper.questionInfo(d.getQuestionId()) != null) {
+                    assignmentMapper.addAssignmentQuestion(assignmentQuestionId, assignmentId, d.getQuestionId(), d.getScore(), d.getSortOrder());
                     map.put(d.getQuestionId(), assignmentQuestionId);
                 }
             }
@@ -124,7 +124,7 @@ public class AssignmentServiceImpl implements AssignmentService {
         List<String> list = new ArrayList<>();
         for (AssignmentQuestionInfoDto d : dto) {
             if (assignmentMapper.assignmentQuestionInfo(d.getAssignmentQuestionId()) != null) {
-                assignmentMapper.updateAssignmentQuestion(d.getAssignmentQuestionId(), d.getScore(), d.getSoreOrder());
+                assignmentMapper.updateAssignmentQuestion(d.getAssignmentQuestionId(), d.getScore(), d.getSortOrder());
                 list.add(d.getAssignmentQuestionId());
             }
         }
