@@ -67,6 +67,26 @@ public class UserController {
     }
 
     /**
+     * 退出登录
+     * <p>1.从请求头中获取当前令牌</p>
+     * <p>2.检查令牌是否存在于Redis中</p>
+     * <p>3.通过则删除Redis中令牌</p>
+     * <p>4.返回结果</p>
+     * @return {@link NormalResult}
+     */
+    @PostMapping("/logout")
+    public NormalResult<?> logout(HttpServletRequest request) {
+        String token = request.getHeader("Authorization");
+        ValueOperations<String, String> ops = stringRedisTemplate.opsForValue();
+        String storedToken = ops.get(token);
+        if(storedToken != null && storedToken.equals(token)) {
+            stringRedisTemplate.delete(token);
+            return NormalResult.success();
+        }
+        return NormalResult.error(NormalResult.AUTHORIZED_ERROR);
+    }
+
+    /**
      * 添加用户
      * <p>1.检查管理员令牌</p>
      * <p>2.检查用户名{@code username}是否已存在</p>
