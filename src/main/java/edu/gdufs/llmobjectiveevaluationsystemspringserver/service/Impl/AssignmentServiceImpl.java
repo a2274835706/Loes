@@ -110,6 +110,11 @@ public class AssignmentServiceImpl implements AssignmentService {
     }
 
     @Override
+    public AssignmentQuestion getAssignmentQuestionInfo(String assignmentQuestionID) {
+        return assignmentMapper.assignmentQuestionInfo(assignmentQuestionID);
+    }
+
+    @Override
     public Map<String, List<AssignmentQuestion>> assignmentQuestionList(List<String> assignmentID) {
         Map<String, List<AssignmentQuestion>> map = new HashMap<>();
         for (String id : assignmentID) {
@@ -187,5 +192,10 @@ public class AssignmentServiceImpl implements AssignmentService {
             map.put(id, assignmentMapper.releaseListOfClass(id));
         }
         return map;
+    }
+
+    @Override
+    public List<Assignment> searchAssignment(String teacherId, String keyword) {
+        return assignmentMapper.searchAssignment(teacherId, keyword);
     }
 }
