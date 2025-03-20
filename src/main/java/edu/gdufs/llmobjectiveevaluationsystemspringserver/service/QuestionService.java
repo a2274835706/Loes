@@ -17,4 +17,6 @@ public interface QuestionService {
 
     boolean updateQuestion(String questionId, String content, String answer, String questionType);
 
+    List<Question> searchQuestion(String keyword, String teacherId);
+
 }

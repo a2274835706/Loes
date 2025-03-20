@@ -74,4 +74,9 @@ public class QuestionServiceImpl implements QuestionService {
         return false;
     }
 
+    @Override
+    public List<Question> searchQuestion(String keyword, String teacherId) {
+        return questionMapper.searchQuestion(keyword, teacherId);
+    }
+
 }
