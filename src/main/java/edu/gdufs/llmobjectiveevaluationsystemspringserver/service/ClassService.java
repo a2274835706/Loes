@@ -10,6 +10,8 @@ public interface ClassService {
 
     String addClass(String courseId, String className, String state);
 
+    Class getClassInfoByClassId(String classId);
+
     List<Class> classInfo(List<String> classId);
 
     Map<String, List<Class>> classList(List<String> courseId);

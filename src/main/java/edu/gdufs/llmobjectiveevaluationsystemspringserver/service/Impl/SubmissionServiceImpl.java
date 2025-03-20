@@ -48,7 +48,7 @@ public class SubmissionServiceImpl implements SubmissionService {
     @Override
     public List<Submission> submissionInfo(List<String> submissionId) {
         List<Submission> list = new ArrayList<>();
-        for (String id: submissionId) {
+        for (String id : submissionId) {
             Submission submission = submissionMapper.submissionInfo(id);
             if (submission != null) {
                 list.add(submission);
@@ -60,10 +60,10 @@ public class SubmissionServiceImpl implements SubmissionService {
     @Override
     public Map<String, Map<String, List<Submission>>> submissionOfRelease(List<String> releaseId) {
         Map<String, Map<String, List<Submission>>> map = new HashMap<>();
-        for (String id: releaseId) {
+        for (String id : releaseId) {
             List<Submission> submissions = submissionMapper.submissionOfRelease(id);
             Map<String, List<Submission>> submissionMap = new HashMap<>();
-            for (Submission submission: submissions) {
+            for (Submission submission : submissions) {
                 String studentId = submission.getStudentId();
                 if (!submissionMap.containsKey(studentId)) {
                     submissionMap.put(studentId, new ArrayList<>());
@@ -78,10 +78,10 @@ public class SubmissionServiceImpl implements SubmissionService {
     @Override
     public Map<String, Map<String, List<Submission>>> submissionOfStudent(List<String> studentId) {
         Map<String, Map<String, List<Submission>>> map = new HashMap<>();
-        for (String id: studentId) {
+        for (String id : studentId) {
             List<Submission> submissions = submissionMapper.submissionOfStudent(id);
             Map<String, List<Submission>> submissionMap = new HashMap<>();
-            for (Submission submission: submissions) {
+            for (Submission submission : submissions) {
                 String releaseId = submission.getReleaseId();
                 if (!submissionMap.containsKey(releaseId)) {
                     submissionMap.put(releaseId, new ArrayList<>());
@@ -96,7 +96,7 @@ public class SubmissionServiceImpl implements SubmissionService {
     @Override
     public Map<String, List<Submission>> submissionOfStudentOfReleases(String studentId, List<String> releaseId) {
         Map<String, List<Submission>> map = new HashMap<>();
-        for (String id: releaseId) {
+        for (String id : releaseId) {
             map.put(id, submissionMapper.submissionOfReleaseAndStudent(id, studentId));
         }
         return map;
@@ -105,7 +105,7 @@ public class SubmissionServiceImpl implements SubmissionService {
     @Override
     public Map<String, List<Submission>> submissionOfReleaseOfStudents(List<String> studentId, String releaseId) {
         Map<String, List<Submission>> map = new HashMap<>();
-        for (String id: studentId) {
+        for (String id : studentId) {
             map.put(id, submissionMapper.submissionOfReleaseAndStudent(releaseId, id));
         }
         return map;

@@ -37,10 +37,10 @@ public class AssignmentServiceImpl implements AssignmentService {
     private PrefixSnowflake snowflake;
 
     @Override
-    public String addAssignment(String teacherId, String title, String description) {
-        if (userMapper.getTeacherByTeacherId(teacherId) != null) {
+    public String addAssignment(String teacherID, String title, String description) {
+        if (userMapper.getTeacherByTeacherId(teacherID) != null) {
             String assignmentId = snowflake.nextPrefixId(PrefixSnowflake.PREFIX_ASSIGNMENT);
-            assignmentMapper.addAssignment(assignmentId, teacherId, title, description);
+            assignmentMapper.addAssignment(assignmentId, teacherID, title, description);
             return assignmentId;
         }
         return null;
@@ -86,13 +86,13 @@ public class AssignmentServiceImpl implements AssignmentService {
     }
 
     @Override
-    public Map<String, String> addAssignmentQuestion(String assignmentId, List<AssignmentQuestionInfoDto> dto) {
+    public Map<String, String> addAssignmentQuestion(String assignmentID, List<AssignmentQuestionInfoDto> dto) {
         Map<String, String> map = new HashMap<>();
-        if (assignmentMapper.assignmentInfo(assignmentId) != null) {
+        if (questionMapper.questionInfo(assignmentID) != null) {
             for (AssignmentQuestionInfoDto d : dto) {
                 String assignmentQuestionId = snowflake.nextPrefixId(PrefixSnowflake.PREFIX_ASSIGNMENT_QUESTION);
-                if (questionMapper.questionInfo(d.getQuestionId()) != null) {
-                    assignmentMapper.addAssignmentQuestion(assignmentQuestionId, assignmentId, d.getQuestionId(), d.getScore(), d.getSortOrder());
+                if (questionMapper.questionInfo(assignmentQuestionId) != null) {
+                    assignmentMapper.addAssignmentQuestion(assignmentQuestionId, assignmentID, d.getQuestionId(), d.getScore(), d.getSortOrder());
                     map.put(d.getQuestionId(), assignmentQuestionId);
                 }
             }
@@ -107,6 +107,11 @@ public class AssignmentServiceImpl implements AssignmentService {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public AssignmentQuestion getAssignmentQuestionInfo(String assignmentQuestionID) {
+        return assignmentMapper.assignmentQuestionInfo(assignmentQuestionID);
     }
 
     @Override
@@ -187,5 +192,10 @@ public class AssignmentServiceImpl implements AssignmentService {
             map.put(id, assignmentMapper.releaseListOfClass(id));
         }
         return map;
+    }
+
+    @Override
+    public List<Assignment> searchAssignment(String teacherId, String keyword) {
+        return assignmentMapper.searchAssignment(teacherId, keyword);
     }
 }

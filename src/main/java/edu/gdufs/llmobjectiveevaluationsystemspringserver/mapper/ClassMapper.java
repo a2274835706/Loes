@@ -37,7 +37,7 @@ public interface ClassMapper {
     @Update("update class set state=#{state}, update_at=now() where class_id=#{classId}")
     void updateState(String classId, String state);
 
-    @Update("update class set state=#{state}, update_at=now() where course_id=#{courseId}")
+    @Update("update class set state=#{state}, update_at=now() where course_id=#{classId}")
     void updateStateForCourse(String courseId, String state);
 
     @Update("update class set state='filed', file_at=now() where course_id=#{classId}")

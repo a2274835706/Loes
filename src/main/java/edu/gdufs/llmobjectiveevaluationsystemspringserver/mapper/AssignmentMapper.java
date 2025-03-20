@@ -19,6 +19,9 @@ public interface AssignmentMapper {
     @Select("select * from assignment where teacher_id=#{teacherId}")
     List<Assignment> assignmentOfTeacher(String teacherId);
 
+    @Select("select * from assignment where teacher_id=#{teacherId} and title like CONCAT('%',#{keyword},'%')")
+    List<Assignment> searchAssignment(String teacherId, String keyword);
+
     @Update("update assignment set title=#{title}, description=#{description}, update_at=now() where assignment_id=#{assignmentId}")
     void updateAssignment(String assignmentId, String title, String description);
 

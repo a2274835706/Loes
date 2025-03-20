@@ -108,7 +108,7 @@ create table question (
     check(question_type in ('choice', 'fill-blank', 'programming', 'essay'))
 );
 
-create table assignment_problem (
+create table assignment_question (
     assignment_problem_id varchar(64) not null,
     assignment_id varchar(64) not null,
     question_id varchar(64) not null,

@@ -11,7 +11,7 @@ public interface SubmissionMapper {
     @Insert("insert into submission values (#{submissionId}, #{releaseId}, #{studentId}, #{questionId}, #{process}, #{answer}, 0, '', now(), now(), null)")
     void addSubmission(String submissionId, String releaseId, String studentId, String questionId, String process, String answer);
 
-    @Select("select * from submission where release_id=#{releaseId}")
+    @Select("select * from submission where submission_id=#{submissionId}")
     Submission submissionInfo(String submissionId);
 
     @Select("select * from submission where release_id=#{releaseId}")

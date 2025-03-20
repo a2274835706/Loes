@@ -24,6 +24,8 @@ public interface AssignmentService {
 
     boolean deleteAssignmentQuestion(String assignmentQuestionID);
 
+    AssignmentQuestion getAssignmentQuestionInfo(String assignmentQuestionID);
+
     Map<String, List<AssignmentQuestion>> assignmentQuestionList(List<String> assignmentID);
 
     List<String> updateAssignmentQuestion(List<AssignmentQuestionInfoDto> dto);
@@ -39,5 +41,7 @@ public interface AssignmentService {
     Map<String, List<ReleaseAssignment>> releaseAssignmentOfAssignment(List<String> assignmentID);
 
     Map<String, List<ReleaseAssignment>> releaseAssignmentOfClass(List<String> classId);
+
+    List<Assignment> searchAssignment(String teacherId, String keyword);
 
 }

@@ -17,6 +17,9 @@ public interface QuestionMapper {
     @Select("select * from question where teacher_id=#{teacherId}")
     List<Question> questionOfTeacher(String teacherId);
 
+    @Select("select * from question where teacher_id=#{teacherId} and JSON_EXTRACT(content,'$.title') like CONCAT('%',#{keyword},'%')")
+    List<Question> searchQuestion(String keyword, String teacherId);
+
     @Update("update question set content=#{content}, answer=#{answer}, question_type=#{questionType}, update_at=now() where question_id=#{questionId}")
     void updateQuestion(String questionId, String content, String answer, String questionType);
 

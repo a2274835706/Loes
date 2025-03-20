@@ -46,6 +46,7 @@ public class UserController {
      * <p>2.校验密码 {@code password}</p>
      * <p>3.校验成功则生成JWT令牌，并存储到Redis中</p>
      * <p>4.返回结果</p>
+     *
      * @return {@link NormalResult}
      */
     @PostMapping("/login")
@@ -60,10 +61,31 @@ public class UserController {
             ValueOperations<String, String> ops = stringRedisTemplate.opsForValue();
             ops.set(token, token, durationHours, TimeUnit.HOURS);
             userInfo.setToken(token);
-            log.info("{} {} from {} pass",request.getMethod(), request.getRequestURI(), IPUtil.getClientIP(request));
+            log.info("{} {} from {} pass", request.getMethod(), request.getRequestURI(), IPUtil.getClientIP(request));
             return NormalResult.success(userInfo);
         }
         return NormalResult.error(NormalResult.IDENTIFICATION_ERROR);
+    }
+
+    /**
+     * 退出登录
+     * <p>1.从请求头中获取当前令牌</p>
+     * <p>2.检查令牌是否存在于Redis中</p>
+     * <p>3.通过则删除Redis中令牌</p>
+     * <p>4.返回结果</p>
+     *
+     * @return {@link NormalResult}
+     */
+    @PostMapping("/logout")
+    public NormalResult<?> logout(HttpServletRequest request) {
+        String token = request.getHeader("Authorization");
+        ValueOperations<String, String> ops = stringRedisTemplate.opsForValue();
+        String storedToken = ops.get(token);
+        if (storedToken != null && storedToken.equals(token)) {
+            stringRedisTemplate.delete(token);
+            return NormalResult.success();
+        }
+        return NormalResult.error(NormalResult.AUTHORIZED_ERROR);
     }
 
     /**
@@ -72,6 +94,7 @@ public class UserController {
      * <p>2.检查用户名{@code username}是否已存在</p>
      * <p>3.不存在则添加新用户</p>
      * <p>3.返回结果</p>
+     *
      * @return {@link NormalResult}
      */
     @PostMapping("/add")
@@ -91,6 +114,7 @@ public class UserController {
      * <p>1.检查管理员令牌</p>
      * <p>2.检查通过则为该{@code userId}添加新身份</p>
      * <p>3.返回结果</p>
+     *
      * @return {@link NormalResult}
      */
     @PostMapping("/identity")
@@ -106,6 +130,7 @@ public class UserController {
      * <p>1.从除了{@code userId}的参数中列表中，查询其相应的{@code userId}组成集合</p>
      * <p>2.使用{@code userId}查询用户信息</p>
      * <p>3.返回结果</p>
+     *
      * @return {@link NormalResult}
      */
     @GetMapping("/info")
@@ -131,6 +156,7 @@ public class UserController {
      * <p>1.检查管理员令牌</p>
      * <p>2.检查通过则删除用户{@code userId}</p>
      * <p>3.返回结果</p>
+     *
      * @return {@link NormalResult}
      */
     @DeleteMapping("/remove")
@@ -144,6 +170,7 @@ public class UserController {
 
     /**
      * 修改昵称
+     *
      * @return {@link NormalResult}
      */
     @PatchMapping("/modify")
@@ -154,6 +181,7 @@ public class UserController {
 
     /**
      * 使用昵称模糊搜索用户
+     *
      * @return {@link NormalResult}
      */
     @GetMapping("/list")

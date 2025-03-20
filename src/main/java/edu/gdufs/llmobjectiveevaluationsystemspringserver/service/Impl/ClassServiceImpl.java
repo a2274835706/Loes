@@ -32,6 +32,14 @@ public class ClassServiceImpl implements ClassService {
     }
 
     @Override
+    public Class getClassInfoByClassId(String classId) {
+        if (classMapper.classInfo(classId) != null) {
+            return classMapper.classInfo(classId);
+        }
+        return null;
+    }
+
+    @Override
     public List<Class> classInfo(List<String> classId) {
         List<Class> classList = new ArrayList<>();
         for (String id : classId) {
@@ -47,7 +55,7 @@ public class ClassServiceImpl implements ClassService {
     @Override
     public Map<String, List<Class>> classList(List<String> courseId) {
         Map<String, List<Class>> map = new HashMap<>();
-        for (String id: courseId) {
+        for (String id : courseId) {
             map.put(id, classMapper.classList(id));
         }
         return map;
@@ -56,7 +64,7 @@ public class ClassServiceImpl implements ClassService {
     @Override
     public Map<String, List<String>> students(List<String> classId) {
         Map<String, List<String>> map = new HashMap<>();
-        for (String id: classId) {
+        for (String id : classId) {
             map.put(id, classMapper.students(id));
         }
         return map;
