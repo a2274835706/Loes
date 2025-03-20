@@ -23,7 +23,7 @@ public interface CourseService {
 
     Map<String, List<String>> teacherCourseList(List<String> teacherId);
 
-    Map<String, List<String>> teachers(List<String> teacherId);
+    Map<String, List<String>> teachers(List<String> courseId);
 
     boolean teacherFileCourse(String courseId);
 

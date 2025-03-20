@@ -104,9 +104,9 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public Map<String, List<String>> teachers(List<String> teacherId) {
+    public Map<String, List<String>> teachers(List<String> courseId) {
         Map<String, List<String>> map = new HashMap<>();
-        for (String id : teacherId) {
+        for (String id : courseId) {
             map.put(id, courseMapper.getTeachers(id));
         }
         return map;
