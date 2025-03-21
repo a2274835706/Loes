@@ -1,10 +1,12 @@
 package edu.gdufs.llmobjectiveevaluationsystemspringserver.contorller;
 
 import edu.gdufs.llmobjectiveevaluationsystemspringserver.dto.ClassInfoDto;
+import edu.gdufs.llmobjectiveevaluationsystemspringserver.dto.ClassNoticeDto;
 import edu.gdufs.llmobjectiveevaluationsystemspringserver.mapper.UserMapper;
 import edu.gdufs.llmobjectiveevaluationsystemspringserver.pojo.response.UserInfo;
 import edu.gdufs.llmobjectiveevaluationsystemspringserver.pojo.result.NormalResult;
 import edu.gdufs.llmobjectiveevaluationsystemspringserver.pojo.sql.Class;
+import edu.gdufs.llmobjectiveevaluationsystemspringserver.pojo.sql.ClassNotice;
 import edu.gdufs.llmobjectiveevaluationsystemspringserver.pojo.sql.Course;
 import edu.gdufs.llmobjectiveevaluationsystemspringserver.pojo.sql.Teacher;
 import edu.gdufs.llmobjectiveevaluationsystemspringserver.service.ClassService;
@@ -50,6 +52,30 @@ public class ClassController {
         return NormalResult.error(NormalResult.EXISTENCE_ERROR);
     }
 
+    @PostMapping("/notice")
+    public NormalResult<?> publishNotice(@RequestBody ClassNoticeDto dto,HttpServletRequest request) {
+        String token = request.getHeader("Authorization");
+        String identity = jwtUtil.verifyToken(token).get("identity").toString();
+        if(identity.contains("administrator")) {
+            classService.addClassNotice(dto.getClassNoticeId(),dto.getClassId(), dto.getTeacherId(), dto.getTitle(), dto.getContent());
+            return NormalResult.success();
+        }
+        //获取令牌中老师的id
+        String currentTeacherId = (String) jwtUtil.verifyToken(token).get("userId");
+        //根据班级id获取课程id
+        List<String> courseIds = classService.getCourseByClassId(dto.getClassId());
+        //根据课程id获取教师列表
+        Map<String, List<String>> teacherList = courseService.teachers(courseIds);
+        //遍历教师列表，如果包含当前教师id(说明老师是这个班的)，则发布公告
+        for(int i=0;i<teacherList.size();i++){
+            if(teacherList.get(courseIds.get(i)).contains(currentTeacherId)){
+                classService.addClassNotice(dto.getClassNoticeId(),dto.getClassId(), dto.getTeacherId(), dto.getTitle(), dto.getContent());
+                return NormalResult.success();
+            }
+        }
+        return NormalResult.error(NormalResult.AUTHORIZED_ERROR);
+    }
+
     /**
      * 获取课程的班级信息
      * @return {@link NormalResult}
@@ -82,6 +108,15 @@ public class ClassController {
                                      @RequestParam("classId") String classId){
         if (!classService.classInfo(List.of(classId)).isEmpty()) {
             return NormalResult.success(classService.joinClass(studentId, classId));
+        }
+        return NormalResult.error(NormalResult.EXISTENCE_ERROR);
+    }
+
+    @GetMapping("/notice")
+    public NormalResult<?> searchClassNotice(@RequestParam("keyword") String keyword){
+        List<ClassNotice> classNoticeList = classService.searchClassNotice(keyword);
+        if(classNoticeList != null && !classNoticeList.isEmpty()) {
+            return NormalResult.success(classNoticeList);
         }
         return NormalResult.error(NormalResult.EXISTENCE_ERROR);
     }
@@ -121,6 +156,34 @@ public class ClassController {
                 if (classService.modifyClass(dto.getClassId(), dto.getClassName())) {
                     return NormalResult.success();
                 }
+            }
+        }
+        return NormalResult.error(NormalResult.EXISTENCE_ERROR);
+    }
+
+    @PatchMapping("/notice")
+    public NormalResult<?> updateNotice(@RequestBody ClassNoticeDto dto,HttpServletRequest request){
+        //不存在该公告
+        if(classService.getClassInfoByClassId(dto.getClassId())==null) {
+            return NormalResult.error(NormalResult.EXISTENCE_ERROR);
+        }
+        String token = request.getHeader("Authorization");
+        String identity = jwtUtil.verifyToken(token).get("identity").toString();
+        if(identity.contains("administrator")) {
+            classService.updateClassNotice(dto.getClassNoticeId(), dto.getTitle(), dto.getContent());
+            return NormalResult.success();
+        }
+        //获取令牌中老师的id
+        String currentTeacherId = (String) jwtUtil.verifyToken(token).get("userId");
+        //根据班级id获取课程id
+        List<String> courseIds = classService.getCourseByClassId(dto.getClassId());
+        //根据课程id获取教师列表
+        Map<String, List<String>> teacherList = courseService.teachers(courseIds);
+        //遍历教师列表，如果包含当前教师id(说明老师是这个班的)，则修改公告
+        for(int i=0;i<teacherList.size();i++){
+            if(teacherList.get(courseIds.get(i)).contains(currentTeacherId)){
+                classService.updateClassNotice(dto.getClassNoticeId(), dto.getTitle(), dto.getContent());
+                return NormalResult.success();
             }
         }
         return NormalResult.error(NormalResult.EXISTENCE_ERROR);
@@ -171,5 +234,21 @@ public class ClassController {
             }
         }
         return NormalResult.error(NormalResult.EXISTENCE_ERROR);
+    }
+
+    @DeleteMapping("/notice")
+    public NormalResult<?> removeNotice(@RequestParam("classNoticeId") String classNoticeId, HttpServletRequest request){
+        if(classService.getClassNoticeById(classNoticeId)==null) {
+            return NormalResult.error(NormalResult.EXISTENCE_ERROR);
+        }
+        String token = request.getHeader("Authorization");
+        String identity = jwtUtil.verifyToken(token).get("identity").toString();
+        String teacherId = classService.getTeacherByClassNoticeId(classNoticeId);
+        String currentTeacherId = userService.getTeacherByUserId((String) jwtUtil.verifyToken(token).get("userId")).getTeacherId();
+        if(identity.contains("administrator") || (identity.contains("teacher") && teacherId.equals(currentTeacherId))) {
+            classService.deleteNotice(classNoticeId);
+            return NormalResult.success();
+        }
+        return NormalResult.error(NormalResult.AUTHORIZED_ERROR);
     }
 }

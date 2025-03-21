@@ -1,6 +1,7 @@
 package edu.gdufs.llmobjectiveevaluationsystemspringserver.service;
 
 import edu.gdufs.llmobjectiveevaluationsystemspringserver.pojo.response.UserInfo;
+import edu.gdufs.llmobjectiveevaluationsystemspringserver.pojo.sql.Teacher;
 import edu.gdufs.llmobjectiveevaluationsystemspringserver.pojo.sql.User;
 
 import java.util.List;
@@ -27,5 +28,7 @@ public interface UserService {
     void modifyNickname(String userId, String nickname);
 
     List<User> searchUser(String keyword);
+
+    Teacher getTeacherByUserId(String userId);
 
 }

@@ -3,6 +3,8 @@ package edu.gdufs.llmobjectiveevaluationsystemspringserver.service.Impl;
 import edu.gdufs.llmobjectiveevaluationsystemspringserver.mapper.ClassMapper;
 import edu.gdufs.llmobjectiveevaluationsystemspringserver.mapper.UserMapper;
 import edu.gdufs.llmobjectiveevaluationsystemspringserver.pojo.sql.Class;
+import edu.gdufs.llmobjectiveevaluationsystemspringserver.pojo.sql.ClassNotice;
+import edu.gdufs.llmobjectiveevaluationsystemspringserver.pojo.sql.Teacher;
 import edu.gdufs.llmobjectiveevaluationsystemspringserver.service.ClassService;
 import edu.gdufs.llmobjectiveevaluationsystemspringserver.util.PrefixSnowflake;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +42,11 @@ public class ClassServiceImpl implements ClassService {
     }
 
     @Override
+    public ClassNotice getClassNoticeById(String classNoticeId) {
+        return classMapper.getClassNoticeById(classNoticeId);
+    }
+
+    @Override
     public List<Class> classInfo(List<String> classId) {
         List<Class> classList = new ArrayList<>();
         for (String id : classId) {
@@ -49,6 +56,11 @@ public class ClassServiceImpl implements ClassService {
             }
         }
         return classList;
+    }
+
+    @Override
+    public List<String> getCourseByClassId(String classId) {
+        return classMapper.courses(classId);
     }
 
 
@@ -98,6 +110,31 @@ public class ClassServiceImpl implements ClassService {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public void addClassNotice(String classNoticeId, String classId, String teacherId, String title, String content) {
+        userMapper.addClassNotice(classNoticeId, classId, teacherId, title, content);
+    }
+
+    @Override
+    public void updateClassNotice(String classNoticeId, String title, String content) {
+        classMapper.updateNotice(classNoticeId, title, content);
+    }
+
+    @Override
+    public String getTeacherByClassNoticeId(String classNoticeId) {
+        return classMapper.getTeacherByClassNoticeId(classNoticeId);
+    }
+
+    @Override
+    public void deleteNotice(String classNoticeId) {
+        classMapper.deleteNotice(classNoticeId);
+    }
+
+    @Override
+    public List<ClassNotice> searchClassNotice(String keyword) {
+        return classMapper.searchClassNotice(keyword);
     }
 
 }

@@ -152,5 +152,10 @@ public class UserServiceImpl implements UserService {
         return userMapper.searchUser("%" + keyword + "%");
     }
 
+    @Override
+    public Teacher getTeacherByUserId(String userId) {
+        return userMapper.getTeacherByUserId(userId);
+    }
+
 
 }
