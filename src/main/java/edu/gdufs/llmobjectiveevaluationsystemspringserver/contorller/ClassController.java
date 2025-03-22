@@ -61,16 +61,16 @@ public class ClassController {
             return NormalResult.success();
         }
         //获取令牌中老师的id
-        String currentTeacherId = (String) jwtUtil.verifyToken(token).get("userId");
+        String currentTeacherId = userService.getTeacherByUserId((String) jwtUtil.verifyToken(token).get("userId")).getTeacherId();
         //根据班级id获取课程id
         List<String> courseIds = classService.getCourseByClassId(dto.getClassId());
-        //根据课程id获取教师列表
-        Map<String, List<String>> teacherList = courseService.teachers(courseIds);
-        //遍历教师列表，如果包含当前教师id(说明老师是这个班的)，则发布公告
-        for(int i=0;i<teacherList.size();i++){
-            if(teacherList.get(courseIds.get(i)).contains(currentTeacherId)){
-                classService.addClassNotice(dto.getClassNoticeId(),dto.getClassId(), dto.getTeacherId(), dto.getTitle(), dto.getContent());
-                return NormalResult.success();
+        if(identity.contains("teacher")) {
+            //判断当前老师是否是该课程的教师
+            for (String courseId : courseIds) {
+                if (courseService.checkTeach(courseId, currentTeacherId)) {
+                    classService.addClassNotice(dto.getClassNoticeId(), dto.getClassId(), dto.getTeacherId(), dto.getTitle(), dto.getContent());
+                    return NormalResult.success();
+                }
             }
         }
         return NormalResult.error(NormalResult.AUTHORIZED_ERROR);
@@ -173,17 +173,17 @@ public class ClassController {
             classService.updateClassNotice(dto.getClassNoticeId(), dto.getTitle(), dto.getContent());
             return NormalResult.success();
         }
-        //获取令牌中老师的id
-        String currentTeacherId = (String) jwtUtil.verifyToken(token).get("userId");
-        //根据班级id获取课程id
-        List<String> courseIds = classService.getCourseByClassId(dto.getClassId());
-        //根据课程id获取教师列表
-        Map<String, List<String>> teacherList = courseService.teachers(courseIds);
-        //遍历教师列表，如果包含当前教师id(说明老师是这个班的)，则修改公告
-        for(int i=0;i<teacherList.size();i++){
-            if(teacherList.get(courseIds.get(i)).contains(currentTeacherId)){
-                classService.updateClassNotice(dto.getClassNoticeId(), dto.getTitle(), dto.getContent());
-                return NormalResult.success();
+        if(identity.contains("teacher")) {
+            //获取令牌中老师的id
+            String currentTeacherId = userService.getTeacherByUserId((String) jwtUtil.verifyToken(token).get("userId")).getTeacherId();
+            //根据班级id获取课程id
+            List<String> courseIds = classService.getCourseByClassId(dto.getClassId());
+            //检查传参班级是否包含当前老师
+            for (String courseId : courseIds) {
+                if (courseService.checkTeach(courseId, currentTeacherId)) {
+                    classService.updateClassNotice(dto.getClassNoticeId(), dto.getTitle(), dto.getContent());
+                    return NormalResult.success();
+                }
             }
         }
         return NormalResult.error(NormalResult.EXISTENCE_ERROR);
