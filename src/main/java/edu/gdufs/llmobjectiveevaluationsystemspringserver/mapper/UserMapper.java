@@ -56,7 +56,7 @@ public interface UserMapper {
     @Insert("insert into administrator values (#{administratorId}, #{userId}, #{accessToken})")
     void addAdministrator(String administratorId, String userId, String accessToken);
 
-    @Insert("insert into class_notice values (#{classNoticeId},#{classId}),#{teacherId},#{title},#{content},now(),now()")
+    @Insert("insert into class_notice values (#{classNoticeId},#{classId},#{teacherId},#{title},#{content},now(),now())")
     void addClassNotice(String classNoticeId, String classId, String teacherId, String title, String content);
 
     @Delete("delete from user where user_id=#{userId}")
