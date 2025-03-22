@@ -18,6 +18,8 @@ public interface ClassService {
 
     List<Class> classInfo(List<String> classId);
 
+    List<String> getClassByStudentId(String studentId);
+
     List<String> getCourseByClassId(String classId);
 
     Map<String, List<Class>> classList(List<String> courseId);
@@ -29,7 +31,6 @@ public interface ClassService {
     boolean removeClass(String classId);
 
     boolean modifyClass(String classId, String className);
-
 
     void addClassNotice(String classNoticeId, String classId, String teacherId, String title, String content);
 

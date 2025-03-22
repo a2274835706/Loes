@@ -1,5 +1,6 @@
 package edu.gdufs.llmobjectiveevaluationsystemspringserver.contorller;
 
+import ch.qos.logback.core.spi.LifeCycle;
 import edu.gdufs.llmobjectiveevaluationsystemspringserver.dto.ClassInfoDto;
 import edu.gdufs.llmobjectiveevaluationsystemspringserver.dto.ClassNoticeDto;
 import edu.gdufs.llmobjectiveevaluationsystemspringserver.mapper.UserMapper;
@@ -88,6 +89,15 @@ public class ClassController {
     @GetMapping("/info")
     public NormalResult<?> classInfo(@RequestParam("classId") List<String> classId) {
         return NormalResult.success(classService.classInfo(classId));
+    }
+
+    @GetMapping("/id")
+    public NormalResult<?> getClassByStudentId(@RequestParam("studentId") String studentId) {
+        List<String> classes = classService.getClassByStudentId(studentId);
+        if(classes != null && !classes.isEmpty()) {
+            return NormalResult.success(classes);
+        }
+        return NormalResult.error(NormalResult.EXISTENCE_ERROR);
     }
 
     /**

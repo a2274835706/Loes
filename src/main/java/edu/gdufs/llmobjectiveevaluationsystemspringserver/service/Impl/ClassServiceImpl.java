@@ -59,6 +59,11 @@ public class ClassServiceImpl implements ClassService {
     }
 
     @Override
+    public List<String> getClassByStudentId(String studentId) {
+        return classMapper.getClassByStudentId(studentId);
+    }
+
+    @Override
     public List<String> getCourseByClassId(String classId) {
         return classMapper.courses(classId);
     }
