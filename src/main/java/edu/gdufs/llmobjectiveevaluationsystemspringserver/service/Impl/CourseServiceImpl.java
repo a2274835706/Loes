@@ -4,6 +4,8 @@ import edu.gdufs.llmobjectiveevaluationsystemspringserver.mapper.ClassMapper;
 import edu.gdufs.llmobjectiveevaluationsystemspringserver.mapper.CourseMapper;
 import edu.gdufs.llmobjectiveevaluationsystemspringserver.mapper.UserMapper;
 import edu.gdufs.llmobjectiveevaluationsystemspringserver.pojo.sql.Course;
+import edu.gdufs.llmobjectiveevaluationsystemspringserver.pojo.sql.CourseNotice;
+import edu.gdufs.llmobjectiveevaluationsystemspringserver.pojo.sql.TeachCourse;
 import edu.gdufs.llmobjectiveevaluationsystemspringserver.service.CourseService;
 import edu.gdufs.llmobjectiveevaluationsystemspringserver.util.PrefixSnowflake;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -143,6 +145,37 @@ public class CourseServiceImpl implements CourseService {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public boolean checkTeach(String courseId, String teacherId) {
+        TeachCourse teachCourse = courseMapper.checkTeach(courseId, teacherId);
+        return teachCourse != null;
+    }
+
+    @Override
+    public CourseNotice getCourseNoticeById(String courseNoticeId) {
+        return courseMapper.getCourseNoticeById(courseNoticeId);
+    }
+
+    @Override
+    public void addNotice(String courseNoticeId, String courseId, String teacherId, String title, String content) {
+        courseMapper.addCourseNotice(courseNoticeId, courseId, teacherId, title, content);
+    }
+
+    @Override
+    public void modifyNotice(String courseNoticeId, String courseId, String title, String content) {
+        courseMapper.modifyCourseNotice(courseNoticeId, courseId, title, content);
+    }
+
+    @Override
+    public List<CourseNotice> searchCourseNotice(String keyword) {
+        return courseMapper.searchCourseNotice(keyword);
+    }
+
+    @Override
+    public boolean removeNotice(String courseNoticeId) {
+        return courseMapper.removeNotice(courseNoticeId);
     }
 
 }

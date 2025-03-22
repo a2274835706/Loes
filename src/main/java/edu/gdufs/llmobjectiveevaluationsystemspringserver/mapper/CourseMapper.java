@@ -1,6 +1,7 @@
 package edu.gdufs.llmobjectiveevaluationsystemspringserver.mapper;
 
 import edu.gdufs.llmobjectiveevaluationsystemspringserver.pojo.sql.Course;
+import edu.gdufs.llmobjectiveevaluationsystemspringserver.pojo.sql.CourseNotice;
 import edu.gdufs.llmobjectiveevaluationsystemspringserver.pojo.sql.StudyCourse;
 import edu.gdufs.llmobjectiveevaluationsystemspringserver.pojo.sql.TeachCourse;
 import org.apache.ibatis.annotations.*;
@@ -54,4 +55,20 @@ public interface CourseMapper {
     @Delete("delete from course where course_id=#{courseId}")
     void removeCourse(String courseId);
 
+    @Select("select * from course_notice where course_notice_id=#{courseNoticeId}")
+    CourseNotice getCourseNoticeById(String courseNoticeId);
+
+    @Insert("insert into course_notice values (#{courseNoticeId},#{courseId},#{teacherId},#{title},#{content},now(),now())")
+    void addCourseNotice(String courseNoticeId, String courseId, String teacherId, String title, String content);
+
+    @Update("update course_notice set course_id=#{courseId},title=#{title},content=#{content},update_at=now() where course_notice_id=#{courseNoticeId}")
+    void modifyCourseNotice(String courseNoticeId, String courseId, String title, String content);
+
+    
+
+    @Delete(("delete from course_notice where course_notice_id=#{courseNoticeId}"))
+    boolean removeNotice(String courseNoticeId);
+
+    @Select("select * from course_notice where title like CONCAT('%',#{keyword},'%')")
+    List<CourseNotice> searchCourseNotice(String keyword);
 }

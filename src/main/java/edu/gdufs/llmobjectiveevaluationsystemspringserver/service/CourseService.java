@@ -1,6 +1,7 @@
 package edu.gdufs.llmobjectiveevaluationsystemspringserver.service;
 
 import edu.gdufs.llmobjectiveevaluationsystemspringserver.pojo.sql.Course;
+import edu.gdufs.llmobjectiveevaluationsystemspringserver.pojo.sql.CourseNotice;
 
 import java.util.List;
 import java.util.Map;
@@ -33,5 +34,16 @@ public interface CourseService {
 
     boolean removeCourse(String courseId);
 
+    boolean checkTeach(String courseId, String teacherId);
 
+    CourseNotice getCourseNoticeById(String courseNoticeId);
+
+    void addNotice(String courseNoticeId, String courseId, String teacherId, String title, String content);
+
+
+    void modifyNotice(String courseNoticeId, String courseId, String title, String content);
+
+    List<CourseNotice> searchCourseNotice(String keyword);
+
+    boolean removeNotice(String courseNoticeId);
 }

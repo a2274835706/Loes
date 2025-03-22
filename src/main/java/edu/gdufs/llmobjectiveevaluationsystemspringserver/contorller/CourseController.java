@@ -1,8 +1,10 @@
 package edu.gdufs.llmobjectiveevaluationsystemspringserver.contorller;
 
 import edu.gdufs.llmobjectiveevaluationsystemspringserver.dto.CourseInfoDto;
+import edu.gdufs.llmobjectiveevaluationsystemspringserver.dto.CourseNoticeDto;
 import edu.gdufs.llmobjectiveevaluationsystemspringserver.pojo.response.UserInfo;
 import edu.gdufs.llmobjectiveevaluationsystemspringserver.pojo.result.NormalResult;
+import edu.gdufs.llmobjectiveevaluationsystemspringserver.pojo.sql.CourseNotice;
 import edu.gdufs.llmobjectiveevaluationsystemspringserver.pojo.sql.Teacher;
 import edu.gdufs.llmobjectiveevaluationsystemspringserver.service.CourseService;
 import edu.gdufs.llmobjectiveevaluationsystemspringserver.service.UserService;
@@ -213,6 +215,71 @@ public class CourseController {
             }
         }
         return NormalResult.error(NormalResult.VALIDATION_ERROR);
+    }
+
+    @PostMapping("/notice")
+    public NormalResult<?> addNotice(@RequestBody CourseNoticeDto dto, HttpServletRequest request) {
+        //检查公告是否存在
+        if(courseService.getCourseNoticeById(dto.getCourseNoticeId()) != null) {
+            return NormalResult.error(NormalResult.EXISTENCE_ERROR);
+        }
+        String token = request.getHeader("Authorization");
+        String identity = jwtUtil.verifyToken(token).get("identity").toString();
+        Teacher teacher = userService.getTeacherByUserId((String) jwtUtil.verifyToken(token).get("userId"));
+        //检查身份，如果是管理员或者当前课程的教师，则添加公告
+        if(identity.contains("administrator") || (teacher != null && courseService.checkTeach(dto.getCourseId(), teacher.getTeacherId()))){
+            courseService.addNotice(dto.getCourseNoticeId(), dto.getCourseId(), dto.getTeacherId(), dto.getTitle(), dto.getContent());
+            return NormalResult.success();
+        }
+        return NormalResult.error(NormalResult.AUTHORIZED_ERROR);
+    }
+
+    @PatchMapping("/notice")
+    public NormalResult<?> modifyNotice(@RequestBody CourseNoticeDto dto, HttpServletRequest request) {
+        System.out.println(dto);
+        //检查公告是否存在
+        if(courseService.getCourseNoticeById(dto.getCourseNoticeId()) == null) {
+            return NormalResult.error(NormalResult.EXISTENCE_ERROR);
+        }
+        String token = request.getHeader("Authorization");
+        String identity = jwtUtil.verifyToken(token).get("identity").toString();
+        Teacher teacher = userService.getTeacherByUserId((String) jwtUtil.verifyToken(token).get("userId"));
+        //检查身份，如果是管理员或者当前课程的教师，则修改公告
+        if(identity.contains("administrator")
+                || (teacher != null && courseService.checkTeach(dto.getCourseId(), teacher.getTeacherId()) && dto.getTeacherId().equals(teacher.getTeacherId()))){
+            courseService.modifyNotice(dto.getCourseNoticeId(), dto.getCourseId(), dto.getTitle(), dto.getContent());
+            return NormalResult.success();
+        }
+        return NormalResult.error(NormalResult.AUTHORIZED_ERROR);
+    }
+
+    @GetMapping("/notice")
+    public NormalResult<?> searchCourseNotice(@RequestParam("keyword") String keyword) {
+        if(keyword == null || keyword.isEmpty()) {
+            return NormalResult.error(NormalResult.VALIDATION_ERROR);
+        }
+        List<CourseNotice> notices = courseService.searchCourseNotice(keyword);
+        if(notices != null && !notices.isEmpty()) {
+            return NormalResult.success(notices);
+        }
+        return NormalResult.error(NormalResult.EXISTENCE_ERROR);
+    }
+
+    @DeleteMapping("/notice")
+    public NormalResult<?> removeNotice(@RequestParam("courseNoticeId") String courseNoticeId, HttpServletRequest request) {
+        CourseNotice courseNotice = courseService.getCourseNoticeById(courseNoticeId);
+        if(courseNotice == null) {
+            return NormalResult.error(NormalResult.EXISTENCE_ERROR);
+        }
+        String token = request.getHeader("Authorization");
+        String identity = jwtUtil.verifyToken(token).get("identity").toString();
+        Teacher teacher = userService.getTeacherByUserId((String) jwtUtil.verifyToken(token).get("userId"));
+        if(identity.contains("administrator") || (teacher != null && courseNotice.getTeacherId().equals(teacher.getTeacherId()))){
+            if(courseService.removeNotice(courseNoticeId)) {
+                return NormalResult.success();
+            }
+        }
+        return NormalResult.error(NormalResult.AUTHORIZED_ERROR);
     }
 
 }
